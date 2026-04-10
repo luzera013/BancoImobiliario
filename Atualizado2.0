@@ -1,0 +1,2743 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banco Imobiliário Pro</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --p0: #E84545; --p0-light: #fde8e8; --p0-dark: #b91c1c;
+            --p1: #3B82F6; --p1-light: #dbeafe; --p1-dark: #1d4ed8;
+            --p2: #F59E0B; --p2-light: #fef3c7; --p2-dark: #b45309;
+            --p3: #10B981; --p3-light: #d1fae5; --p3-dark: #047857;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card2: #263348;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --border-light: #475569;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gold: #F59E0B;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--bg-dark);
+            background-image: radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.08) 0%, transparent 50%),
+                              radial-gradient(ellipse at 80% 20%, rgba(16,185,129,0.05) 0%, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            color: var(--text-primary);
+        }
+
+        .screen { display: none; width: 100%; max-width: 1500px; }
+        .screen.active { display: flex; }
+
+        /* MENU */
+        .menu-screen {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .menu-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 56px 60px;
+            border-radius: var(--radius-xl);
+            text-align: center;
+            width: 420px;
+            animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(32px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .game-logo {
+            width: 88px; height: 88px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 44px;
+            margin: 0 auto 24px;
+            box-shadow: 0 8px 32px rgba(99,102,241,0.35);
+        }
+
+        .game-title {
+            font-size: 32px; font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .game-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 40px; }
+
+        .menu-buttons { display: flex; flex-direction: column; gap: 12px; }
+
+        .menu-btn {
+            padding: 16px 24px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+            font-family: inherit;
+        }
+
+        .menu-btn-primary {
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 16px rgba(99,102,241,0.3);
+        }
+
+        .menu-btn-primary:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 24px rgba(99,102,241,0.45); }
+
+        .menu-btn-secondary {
+            background: var(--bg-card2);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .menu-btn-secondary:hover { background: var(--border); transform: translateY(-1px); }
+
+        /* SETUP */
+        .setup-screen { flex-direction: column; min-height: 100vh; align-items: center; justify-content: center; }
+
+        .setup-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            width: 100%;
+            max-width: 860px;
+            animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        .setup-title {
+            font-size: 26px; font-weight: 800; color: var(--text-primary);
+            margin-bottom: 32px; text-align: center; letter-spacing: -0.3px;
+        }
+
+        .setup-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 32px; }
+
+        .player-setup {
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            border-left: 4px solid;
+            transition: all 0.2s;
+        }
+
+        .player-setup.p0 { border-left-color: var(--p0); }
+        .player-setup.p1 { border-left-color: var(--p1); }
+        .player-setup.p2 { border-left-color: var(--p2); }
+        .player-setup.p3 { border-left-color: var(--p3); }
+
+        .player-setup:hover { border-color: var(--border-light); transform: translateY(-1px); }
+
+        .player-number { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+
+        .player-input {
+            width: 100%; padding: 10px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px; color: var(--text-primary);
+            margin-bottom: 12px; font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .player-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+
+        .player-type-select { display: flex; gap: 8px; }
+
+        .type-btn {
+            flex: 1; padding: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer; font-weight: 600; font-size: 12px;
+            color: var(--text-secondary); font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .type-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .type-btn:hover:not(.active) { border-color: var(--border-light); color: var(--text-primary); }
+
+        .setup-controls { display: flex; gap: 12px; justify-content: center; }
+
+        .btn-back-setup {
+            padding: 14px 28px;
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary); font-weight: 600; font-size: 14px;
+            cursor: pointer; font-family: inherit; transition: all 0.2s;
+        }
+
+        .btn-back-setup:hover { background: var(--border); }
+
+        .btn-start-game {
+            padding: 14px 40px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            border: none;
+            border-radius: var(--radius-md);
+            color: white; font-weight: 700; font-size: 15px;
+            cursor: pointer; font-family: inherit;
+            transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+        }
+
+        .btn-start-game:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 24px rgba(16,185,129,0.4); }
+
+        /* JOGO */
+        .game-screen {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            min-height: calc(100vh - 24px);
+            align-items: start;
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .game-board-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-radius: var(--radius-lg);
+            color: white;
+            font-size: 14px;
+        }
+
+        .game-header-left { display: flex; align-items: center; gap: 12px; }
+        .game-header-icon { font-size: 22px; }
+        .game-title-main { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
+
+        .game-header-right { display: flex; align-items: center; gap: 10px; }
+
+        .round-badge {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Tabuleiro */
+        .board-container { 
+            position: relative; 
+            width: 100%; 
+            max-width: 1100px;
+            aspect-ratio: 1.5/1;
+            margin: 0 auto;
+        }
+
+        .board {
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #0a1a0a 0%, #0d1f0d 50%, #0a1a0a 100%);
+            border: 4px solid #d4af37;
+            border-radius: var(--radius-lg);
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            grid-template-rows: repeat(11, 1fr);
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 0 0 2px rgba(212,175,55,0.3);
+        }
+
+        .center-info {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            font-size: 10px; font-weight: 700;
+            z-index: 1; pointer-events: none;
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        .center-logo {
+            font-size: 24px;
+            margin-bottom: 4px;
+            opacity: 0.6;
+        }
+
+        .square {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-start;
+            font-size: 10px; font-weight: 600;
+            text-align: center; padding: 3px;
+            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #1a2f1a 0%, #1a3a1a 100%);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .square:hover { 
+            filter: brightness(1.3); 
+            z-index: 10;
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+        }
+
+        .square-color-bar {
+            width: 100%; height: 6px;
+            margin-bottom: 1px;
+            flex-shrink: 0;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .square-name {
+            font-size: 8px; color: rgba(255,255,255,0.9);
+            line-height: 1.1; flex-grow: 1;
+            display: flex; align-items: center; justify-content: center;
+            padding: 2px; word-break: break-word;
+            font-weight: 700;
+        }
+
+        .square-price {
+            font-size: 8px; color: rgba(255,215,0,0.9);
+            font-weight: 800; margin-top: 2px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.4);
+            padding: 2px 6px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+
+        .square-houses {
+            display: flex; gap: 1px; justify-content: center;
+            margin-top: 2px; width: 100%; flex-wrap: wrap;
+        }
+
+        .house-icon {
+            width: 6px; height: 6px;
+            background: linear-gradient(135deg, #4ade80, #22c55e, #16a34a);
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .hotel-icon {
+            width: 10px; height: 6px;
+            background: linear-gradient(135deg, #f87171, #ef4444, #dc2626);
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Tokens melhorados */
+        .player-tokens {
+            position: absolute; bottom: 2px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; gap: 2px;
+            flex-wrap: wrap; justify-content: center;
+            z-index: 5;
+        }
+
+        .player-token {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255,255,255,0.9);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 6px; font-weight: 800; color: white;
+            position: relative;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        .player-token.p0 { background: var(--p0); box-shadow: 0 2px 8px rgba(232,69,69,0.6); }
+        .player-token.p1 { background: var(--p1); box-shadow: 0 2px 8px rgba(59,130,246,0.6); }
+        .player-token.p2 { background: var(--p2); box-shadow: 0 2px 8px rgba(245,158,11,0.6); }
+        .player-token.p3 { background: var(--p3); box-shadow: 0 2px 8px rgba(16,185,129,0.6); }
+
+        .player-token.current {
+            animation: tokenPulse 1.5s infinite;
+            width: 14px; height: 14px;
+            border-width: 2px;
+            z-index: 10;
+        }
+
+        @keyframes tokenPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.6), 0 2px 8px rgba(0,0,0,0.5); transform: scale(1) rotate(0deg); }
+            25% { box-shadow: 0 0 0 2px rgba(255,255,255,0.4), 0 2px 10px rgba(0,0,0,0.5); transform: scale(1.1) rotate(5deg); }
+            50% { box-shadow: 0 0 0 4px rgba(255,255,255,0.2), 0 2px 12px rgba(0,0,0,0.5); transform: scale(1.15) rotate(-5deg); }
+            75% { box-shadow: 0 0 0 2px rgba(255,255,255,0.4), 0 2px 10px rgba(0,0,0,0.5); transform: scale(1.1) rotate(5deg); }
+        }
+
+        @keyframes achievementUnlock {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(90deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes boardShake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+
+        @keyframes moneyFloat {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            50% { transform: translateY(-20px) scale(1.1); opacity: 0.8; }
+            100% { transform: translateY(-40px) scale(0.8); opacity: 0; }
+        }
+
+        @keyframes propertyGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,215,0,0.4); }
+            50% { box-shadow: 0 0 20px rgba(255,215,0,0.8); }
+        }
+
+        @keyframes diceRoll3D {
+            0% { transform: rotateX(0deg) rotateY(0deg) scale(1); }
+            25% { transform: rotateX(180deg) rotateY(90deg) scale(1.2); }
+            50% { transform: rotateX(360deg) rotateY(180deg) scale(1.2); }
+            75% { transform: rotateX(540deg) rotateY(270deg) scale(1.2); }
+            100% { transform: rotateX(720deg) rotateY(360deg) scale(1); }
+        }
+
+        .dice-face.rolling {
+            animation: diceRoll3D 0.6s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        .achievement-badge.unlocked {
+            animation: achievementUnlock 0.6s ease-out;
+        }
+
+        .board.shaking {
+            animation: boardShake 0.5s ease-in-out;
+        }
+
+        .money-animation {
+            position: absolute;
+            color: #4ade80;
+            font-weight: 800;
+            font-size: 16px;
+            pointer-events: none;
+            animation: moneyFloat 1s ease-out forwards;
+            z-index: 1000;
+        }
+
+        .square.highlight-property {
+            animation: propertyGlow 2s ease-in-out infinite;
+        }
+
+        /* Cores dos grupos - melhoradas */
+        .sq-brown .square-color-bar { background: linear-gradient(135deg, #92400e, #b45309); }
+        .sq-lightblue .square-color-bar { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+        .sq-pink .square-color-bar { background: linear-gradient(135deg, #ec4899, #f472b6); }
+        .sq-orange .square-color-bar { background: linear-gradient(135deg, #f97316, #fb923c); }
+        .sq-red .square-color-bar { background: linear-gradient(135deg, #ef4444, #f87171); }
+        .sq-yellow .square-color-bar { background: linear-gradient(135deg, #eab308, #facc15); }
+        .sq-green .square-color-bar { background: linear-gradient(135deg, #22c55e, #4ade80); }
+        .sq-darkblue .square-color-bar { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+
+        .sq-corner { background: linear-gradient(135deg, #162d16, #1a3d1a) !important; }
+        .sq-tax { background: linear-gradient(135deg, #2a0a0a, #3d1a1a) !important; }
+        .sq-railroad { background: linear-gradient(135deg, #1c1c1c, #2d2d2d) !important; }
+        .sq-utility { background: linear-gradient(135deg, #1a1a2e, #2a2a3e) !important; }
+        .sq-chance { background: linear-gradient(135deg, #1c0a2a, #2d1a3a) !important; }
+        .sq-jail { background: linear-gradient(135deg, #1f0a0a, #3d1a1a) !important; }
+        .sq-parking { background: linear-gradient(135deg, #0a1a2a, #1a2a3a) !important; }
+        .sq-gotojail { background: linear-gradient(135deg, #2a0a0a, #3d1a1a) !important; }
+
+        .sq-corner .square-name { color: #fbbf24; font-size: 6px; }
+        .sq-tax .square-name { color: #fca5a5; }
+        .sq-railroad .square-name { color: #d1d5db; }
+        .sq-utility .square-name { color: #c4b5fd; }
+        .sq-chance .square-name { color: #d8b4fe; }
+        .sq-jail .square-name { color: #fca5a5; }
+        .sq-parking .square-name { color: #93c5fd; }
+        .sq-gotojail .square-name { color: #fca5a5; }
+
+        /* Destaque da casa atual */
+        .square.current-position {
+            animation: squareGlow 1.5s infinite;
+            z-index: 8;
+        }
+
+        @keyframes squareGlow {
+            0%, 100% { filter: brightness(1.3); }
+            50% { filter: brightness(1.7); }
+        }
+
+        /* Indicador de dono */
+        .owner-bar {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 3px;
+        }
+
+        .owner-bar.p0 { background: var(--p0); }
+        .owner-bar.p1 { background: var(--p1); }
+        .owner-bar.p2 { background: var(--p2); }
+        .owner-bar.p3 { background: var(--p3); }
+
+        /* Status bar */
+        .status-bar {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 16px;
+            background: var(--bg-card2);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .status-dot.active { background: var(--success); animation: dotPulse 2s infinite; }
+        .status-dot.wait { background: var(--warning); }
+
+        @keyframes dotPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .status-text {
+            font-size: 13px; font-weight: 500; color: var(--text-primary);
+        }
+
+        /* SIDEBAR */
+        .game-sidebar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 300px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            z-index: 100;
+            padding: 0;
+        }
+
+        .game-sidebar::-webkit-scrollbar { width: 4px; }
+        .game-sidebar::-webkit-scrollbar-track { background: transparent; }
+        .game-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        
+        .game-sidebar .current-player-box,
+        .game-sidebar .log-section,
+        .game-sidebar .players-section {
+            background: rgba(30,41,59,0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+        }
+
+        /* Painel Jogador Atual */
+        .current-player-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        
+        .current-player-box::-webkit-scrollbar { width: 4px; }
+        .current-player-box::-webkit-scrollbar-track { background: transparent; }
+        .current-player-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .cp-header {
+            padding: 12px 14px 10px;
+            display: flex; align-items: center; gap: 12px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .cp-avatar {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800; color: white;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .cp-avatar::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 2px solid;
+            animation: avatarPulse 2s infinite;
+        }
+
+        .cp-avatar.p0 { background: var(--p0); }
+        .cp-avatar.p1 { background: var(--p1); }
+        .cp-avatar.p2 { background: var(--p2); }
+        .cp-avatar.p3 { background: var(--p3); }
+
+        .cp-avatar.p0::after { border-color: var(--p0); }
+        .cp-avatar.p1::after { border-color: var(--p1); }
+        .cp-avatar.p2::after { border-color: var(--p2); }
+        .cp-avatar.p3::after { border-color: var(--p3); }
+
+        @keyframes avatarPulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.06); }
+        }
+
+        .cp-info { flex: 1; min-width: 0; }
+        .cp-name { font-size: 16px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .cp-type-badge {
+            display: inline-block;
+            font-size: 10px; font-weight: 600;
+            padding: 2px 8px; border-radius: 12px;
+            margin-top: 3px;
+            background: rgba(99,102,241,0.15);
+            color: var(--accent-light);
+        }
+
+        .cp-stats { padding: 10px 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex-shrink: 0; }
+
+        .cp-stat {
+            background: var(--bg-card2);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+        }
+
+        .cp-stat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+        .cp-stat-value { font-size: 16px; font-weight: 800; color: var(--text-primary); }
+        .cp-stat-value.money { color: #4ade80; }
+        .cp-stat-value.position { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Dados */
+        .dice-section { padding: 0 14px 12px; flex-shrink: 0; }
+
+        .dice-display {
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dice-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .dice-faces { display: flex; gap: 8px; align-items: center; }
+
+        .dice-face {
+            width: 32px; height: 32px;
+            background: white;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 900; color: #1e293b;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+
+        @keyframes diceRoll {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-15deg) scale(1.2); }
+            75% { transform: rotate(15deg) scale(1.2); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+
+        .dice-total { font-size: 20px; font-weight: 900; color: var(--accent-light); }
+        .dice-plus { font-size: 14px; color: var(--text-muted); }
+
+        /* Botões de ação */
+        .action-section { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+
+        .action-btn {
+            padding: 12px 16px;
+            border: none; border-radius: var(--radius-md);
+            font-size: 13px; font-weight: 700;
+            cursor: pointer; font-family: inherit;
+            transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px;
+            letter-spacing: 0.2px;
+        }
+
+        .action-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; }
+
+        .btn-roll {
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 14px rgba(99,102,241,0.35);
+        }
+
+        .btn-roll:hover:not(:disabled) { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 20px rgba(99,102,241,0.5); }
+        .btn-roll:active:not(:disabled) { transform: scale(0.98); }
+
+        .btn-buy {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            box-shadow: 0 4px 14px rgba(16,185,129,0.25);
+        }
+
+        .btn-buy:hover:not(:disabled) { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 20px rgba(16,185,129,0.4); }
+
+        .btn-build {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 4px 14px rgba(245,158,11,0.25);
+        }
+
+        .btn-build:hover:not(:disabled) { transform: translateY(-2px) scale(1.02); }
+
+        .btn-skip {
+            background: var(--bg-card2);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-skip:hover:not(:disabled) { background: var(--border); transform: translateY(-1px); }
+
+        .btn-menu {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        .btn-menu:hover { color: var(--text-primary); border-color: var(--border-light); }
+
+        /* Log */
+        .log-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            max-height: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); }
+
+        .game-log {
+            padding: 8px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .game-log::-webkit-scrollbar { width: 4px; }
+        .game-log::-webkit-scrollbar-track { background: transparent; }
+        .game-log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .log-entry {
+            padding: 6px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 10px; font-weight: 500;
+            line-height: 1.3;
+            display: flex; align-items: flex-start; gap: 6px;
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            animation: logSlide 0.3s ease-out;
+        }
+
+        @keyframes logSlide {
+            from { opacity: 0; transform: translateX(-8px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .log-icon { flex-shrink: 0; font-size: 12px; line-height: 1.4; }
+        .log-text { color: var(--text-primary); }
+
+        .log-entry.action { border-left: 2px solid var(--success); }
+        .log-entry.warning { border-left: 2px solid var(--warning); }
+        .log-entry.error { border-left: 2px solid var(--danger); }
+        .log-entry.info { border-left: 2px solid var(--accent); }
+
+        /* Jogadores */
+        .players-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            max-height: 220px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .players-list-content {
+            padding: 8px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .players-list-content::-webkit-scrollbar { width: 4px; }
+        .players-list-content::-webkit-scrollbar-track { background: transparent; }
+        .players-list-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        /* Conquistas */
+        .achievements-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            max-height: 180px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .btn-view-all {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 4px 8px;
+            font-size: 9px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-view-all:hover {
+            background: var(--accent-light);
+            transform: scale(1.05);
+        }
+
+        .achievements-content {
+            padding: 8px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .achievements-content::-webkit-scrollbar { width: 4px; }
+        .achievements-content::-webkit-scrollbar-track { background: transparent; }
+        .achievements-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .achievement-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 9px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .achievement-badge:hover {
+            background: rgba(99,102,241,0.1);
+            border-color: var(--accent);
+            transform: translateX(2px);
+        }
+
+        .achievement-badge.unlocked {
+            border-color: var(--success);
+            background: rgba(16,185,129,0.1);
+        }
+
+        .achievement-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .achievement-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .achievement-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .achievement-desc {
+            font-size: 8px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .achievement-progress {
+            width: 100%;
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 3px;
+            overflow: hidden;
+        }
+
+        .achievement-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--accent));
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .player-mini-card {
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            border-radius: var(--radius-md);
+            border-left: 3px solid;
+            display: flex; align-items: center; gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .player-mini-card.p0 { border-left-color: var(--p0); }
+        .player-mini-card.p1 { border-left-color: var(--p1); }
+        .player-mini-card.p2 { border-left-color: var(--p2); }
+        .player-mini-card.p3 { border-left-color: var(--p3); }
+
+        .player-mini-card.active {
+            background: rgba(99,102,241,0.08);
+            border-color: var(--accent);
+            border-left-width: 3px;
+        }
+
+        .player-mini-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        }
+
+        .player-mini-dot.p0 { background: var(--p0); }
+        .player-mini-dot.p1 { background: var(--p1); }
+        .player-mini-dot.p2 { background: var(--p2); }
+        .player-mini-dot.p3 { background: var(--p3); }
+
+        .player-mini-info { flex: 1; min-width: 0; }
+        .player-mini-name { font-size: 12px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .player-mini-stats { display: flex; gap: 8px; margin-top: 2px; }
+        .player-mini-money { font-size: 10px; font-weight: 700; color: #4ade80; }
+        .player-mini-props { font-size: 9px; color: var(--text-muted); }
+
+        .player-turn-arrow {
+            font-size: 12px;
+            color: var(--accent-light);
+            animation: arrowPulse 1s infinite;
+        }
+
+        @keyframes arrowPulse {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(3px); }
+        }
+
+        /* DIALOGS */
+        .dialog {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000; padding: 20px;
+        }
+
+        .dialog.show { display: flex; animation: fadeIn 0.2s ease-out; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .dialog-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            max-width: 460px; width: 100%;
+            animation: slideUp 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            max-height: 90vh; overflow-y: auto;
+        }
+
+        .dialog-title { font-size: 22px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px; letter-spacing: -0.3px; }
+        .dialog-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+
+        .property-details {
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .property-detail-line {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .property-detail-line:last-child { border-bottom: none; }
+        .detail-label { color: var(--text-secondary); font-weight: 500; }
+        .detail-value { font-weight: 700; color: var(--text-primary); }
+        .detail-value.positive { color: #4ade80; }
+        .detail-value.negative { color: var(--danger); }
+
+        .rent-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1px; background: var(--border);
+            overflow: hidden; border-radius: var(--radius-sm);
+            margin-top: 12px;
+        }
+
+        .rent-cell {
+            background: var(--bg-card2);
+            padding: 7px 10px;
+            font-size: 11px;
+        }
+
+        .rent-cell-label { color: var(--text-muted); margin-bottom: 2px; }
+        .rent-cell-value { font-weight: 700; color: var(--text-primary); }
+
+        .dialog-buttons { display: flex; gap: 10px; margin-top: 16px; }
+        .dialog-buttons button { flex: 1; }
+
+        /* NOTIFICAÇÕES */
+        .notification-container {
+            position: fixed; top: 20px; right: 20px;
+            display: flex; flex-direction: column; gap: 8px;
+            z-index: 2000; max-width: 300px;
+        }
+
+        .notification {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            display: flex; align-items: flex-start; gap: 10px;
+            animation: notifIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        @keyframes notifIn {
+            from { opacity: 0; transform: translateX(100%) scale(0.9); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+
+        @keyframes notifOut {
+            to { opacity: 0; transform: translateX(100%) scale(0.9); }
+        }
+
+        .notification.hide { animation: notifOut 0.3s ease-out forwards; }
+
+        .notif-icon { font-size: 18px; flex-shrink: 0; }
+        .notif-body { flex: 1; }
+        .notif-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
+        .notif-msg { font-size: 11px; color: var(--text-secondary); }
+
+        .notification.success { border-left: 3px solid var(--success); }
+        .notification.warning { border-left: 3px solid var(--warning); }
+        .notification.error { border-left: 3px solid var(--danger); }
+        .notification.info { border-left: 3px solid var(--accent); }
+
+        /* REGRAS */
+        .rules-dialog-content { max-height: 70vh; overflow-y: auto; }
+
+        .rule-section { margin-bottom: 20px; }
+
+        .rule-title {
+            font-size: 12px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--accent-light);
+            margin-bottom: 10px; padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .rule-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+        .rule-list { list-style: none; margin-left: 0; }
+
+        .rule-list li {
+            font-size: 12px; color: var(--text-secondary); padding: 4px 0 4px 20px;
+            position: relative; line-height: 1.5;
+        }
+
+        .rule-list li::before {
+            content: ""; position: absolute; left: 0;
+            color: var(--accent); font-weight: 700;
+        }
+
+        /* AI thinking */
+        .ai-thinking { animation: aiPulse 1.2s infinite; }
+
+        @keyframes aiPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Game over */
+        .gameover-winner {
+            text-align: center;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1));
+            border: 1px solid rgba(99,102,241,0.3);
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+        }
+
+        .gameover-trophy { font-size: 48px; margin-bottom: 12px; }
+        .gameover-name { font-size: 24px; font-weight: 800; color: var(--text-primary); }
+        .gameover-sub { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+        .scoreboard-entry {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            margin-bottom: 6px;
+        }
+
+        .score-rank { font-size: 14px; font-weight: 800; color: var(--text-muted); width: 20px; }
+        .score-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .score-money { font-size: 14px; font-weight: 800; color: #4ade80; }
+        .score-props { font-size: 11px; color: var(--text-muted); }
+
+        /* Turn indicator */
+        .turn-indicator {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 14px;
+            background: rgba(99,102,241,0.1);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 20px;
+            font-size: 12px; font-weight: 600; color: var(--accent-light);
+        }
+
+        .turn-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--accent);
+            animation: dotPulse 1.5s infinite;
+        }
+
+        @media (max-width: 1200px) {
+            .game-sidebar { 
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                width: 260px;
+            }
+            .board-container { max-width: 900px; }
+        }
+        
+        @media (max-width: 768px) {
+            .game-sidebar { 
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                width: 240px;
+                max-height: calc(100vh - 20px);
+            }
+            .board-container { max-width: 750px; }
+            .game-board-section { padding: 10px; }
+            .game-header { padding: 8px 10px; font-size: 11px; }
+            .square-name { font-size: 6px; }
+            .square-price { font-size: 6px; }
+        }
+        
+        @media (max-width: 640px) {
+            .game-sidebar { 
+                position: fixed;
+                top: auto;
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                max-height: 40vh;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .game-sidebar .current-player-box { grid-column: 1; }
+            .game-sidebar .log-section { grid-column: 2; }
+            .game-sidebar .players-section { grid-column: 1 / -1; }
+        }
+        
+        @media (max-width: 1100px) {
+            .setup-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="notification-container" id="notifContainer"></div>
+
+    <!-- MENU -->
+    <div class="screen menu-screen active" id="menuScreen">
+        <div class="menu-content">
+            <div class="game-logo">🏢</div>
+            <h1 class="game-title">Banco Imobiliário</h1>
+            <p class="game-subtitle">Compre, alugue e fique rico!</p>
+            <div class="menu-buttons">
+                <button class="menu-btn menu-btn-primary" onclick="showGameModes()">🎮 Modos de Jogo</button>
+                <button class="menu-btn menu-btn-secondary" onclick="showRules()">📖 Regras do Jogo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENU DE MODOS DE JOGO -->
+    <div class="dialog" id="gameModesDialog">
+        <div class="dialog-content" style="max-width:500px;">
+            <h2 class="dialog-title">🎮 Escolha o Modo de Jogo</h2>
+            <p class="dialog-subtitle">Selecione como deseja jogar</p>
+            
+            <div class="game-modes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 20px 0;">
+                <div class="game-mode-card" onclick="selectGameMode('classic')" style="background: var(--bg-card2); border: 2px solid var(--border); border-radius: var(--radius-lg); padding: 20px; cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); text-align: center;">
+                    <div class="mode-icon">🎮</div>
+                    <div class="mode-title">Clássico</div>
+                    <div class="mode-desc">Jogo tradicional com regras padrão</div>
+                    <div class="mode-features" style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;">
+                        <span class="feature-tag">4 jogadores</span>
+                        <span class="feature-tag">$2000 inicial</span>
+                        <span class="feature-tag">Sem eventos</span>
+                    </div>
+                </div>
+                
+                <div class="game-mode-card" onclick="selectGameMode('rapid')" style="background: var(--bg-card2); border: 2px solid var(--border); border-radius: var(--radius-lg); padding: 20px; cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); text-align: center;">
+                    <div class="mode-icon">⚡️</div>
+                    <div class="mode-title">Rápido</div>
+                    <div class="mode-desc">Partida rápida com mais dinheiro</div>
+                    <div class="mode-features" style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;">
+                        <span class="feature-tag">2 jogadores</span>
+                        <span class="feature-tag">$5000 inicial</span>
+                        <span class="feature-tag">Construção acelerada</span>
+                    </div>
+                </div>
+                
+                <div class="game-mode-card" onclick="selectGameMode('challenge')" style="background: var(--bg-card2); border: 2px solid var(--border); border-radius: var(--radius-lg); padding: 20px; cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); text-align: center;">
+                    <div class="mode-icon">🔥</div>
+                    <div class="mode-title">Desafio</div>
+                    <div class="mode-desc">Eventos econômicos aleatórios</div>
+                    <div class="mode-features" style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;">
+                        <span class="feature-tag">Eventos dinâmicos</span>
+                        <span class="feature-tag">Crashes & Booms</span>
+                        <span class="feature-tag">Alta dificuldade</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dialog-buttons" style="margin-top:20px;">
+                <button class="action-btn btn-skip" onclick="closeGameModes()">🔙 Voltar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETUP -->
+    <div class="screen setup-screen" id="setupScreen">
+        <div class="setup-container">
+            <h2 class="setup-title">⚙️ Configurar Partida</h2>
+            <div class="setup-grid" id="playersSetup"></div>
+            <div class="setup-controls">
+                <button class="btn-back-setup" onclick="goToMenu()">🔙 Voltar</button>
+                <button class="btn-start-game" onclick="startGame()">🎮 Começar Jogo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JOGO -->
+    <div class="screen game-screen" id="gameScreen">
+        <div class="game-board-section">
+            <div class="game-header">
+                <div class="game-header-left">
+                    <span class="game-header-icon">🏢</span>
+                    <span class="game-title-main">Banco Imobiliário</span>
+                </div>
+                <div class="game-header-right">
+                    <div class="turn-indicator">
+                        <div class="turn-dot"></div>
+                        <span id="turnIndicatorText">Vez do jogador</span>
+                    </div>
+                    <div class="round-badge" id="roundIndicator">Rodada 1</div>
+                </div>
+            </div>
+
+            <div class="board-container">
+                <div class="board" id="board"></div>
+                <div class="center-info">
+                    <div class="center-logo">🏢</div>
+                    <div>ESPAÇO LIVRE</div>
+                    <div style="font-size:9px;margin-top:2px;opacity:0.6">Estacionamento Gratuito</div>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <div class="status-dot active" id="statusDot"></div>
+                <div class="status-text" id="statusText">Aguardando início...</div>
+            </div>
+        </div>
+
+        <!-- Sidebar Flutuante -->
+        <div class="game-sidebar">
+            <!-- Jogador Atual -->
+            <div class="current-player-box">
+                <div class="cp-header">
+                    <div class="cp-avatar p0" id="cpAvatar">1</div>
+                    <div class="cp-info">
+                        <div class="cp-name" id="currentPlayerName">Jogador 1</div>
+                        <div class="cp-type-badge" id="playerTypeBadge">👤 Humano</div>
+                    </div>
+                </div>
+                <div class="cp-stats">
+                    <div class="cp-stat">
+                        <div class="cp-stat-label">Saldo</div>
+                        <div class="cp-stat-value money" id="currentPlayerMoney">$2.000</div>
+                    </div>
+                    <div class="cp-stat">
+                        <div class="cp-stat-label">Posição</div>
+                        <div class="cp-stat-value position" id="currentPlayerPosition">Saída</div>
+                    </div>
+                </div>
+                <div class="dice-section">
+                    <div class="dice-display">
+                        <div class="dice-label">🎲 Dados</div>
+                        <div class="dice-faces">
+                            <div class="dice-face" id="dice1">-</div>
+                            <span class="dice-plus">+</span>
+                            <div class="dice-face" id="dice2">-</div>
+                        </div>
+                        <div class="dice-total" id="diceTotal">-</div>
+                    </div>
+                </div>
+                <div class="action-section">
+                    <button class="action-btn btn-roll" id="rollBtn" onclick="rollDice()">🎲 Jogar Dados</button>
+                    <button class="action-btn btn-buy" id="buyBtn" onclick="buyProperty()" disabled>🏠 Comprar Propriedade</button>
+                    <button class="action-btn btn-build" id="buildBtn" onclick="buildHouse()" disabled>🏘️ Construir Casa</button>
+                    <button class="action-btn btn-skip" id="skipBtn" onclick="endTurn()" disabled>➜ Passar Turno</button>
+                    <button class="action-btn btn-menu" onclick="goToMenu()">🏠 Menu Principal</button>
+                </div>
+            </div>
+
+            <!-- Log -->
+            <div class="log-section">
+                <div class="section-header">
+                    <span class="section-title">📋 Eventos</span>
+                </div>
+                <div class="game-log" id="gameLog"></div>
+            </div>
+
+            <!-- Conquistas -->
+            <div class="achievements-section">
+                <div class="section-header">
+                    <span class="section-title">🏆 Conquistas</span>
+                    <button class="btn-view-all" onclick="showAllAchievements()">Ver Todas</button>
+                </div>
+                <div class="achievements-content" id="achievementsContent"></div>
+            </div>
+
+            <!-- Jogadores -->
+            <div class="players-section">
+                <div class="section-header">
+                    <span class="section-title">👥 Placar</span>
+                </div>
+                <div class="players-list-content" id="playersList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIALOG: Comprar Propriedade -->
+    <div class="dialog" id="propertyDialog">
+        <div class="dialog-content">
+            <h2 class="dialog-title" id="dialogTitle">🏠 Propriedade</h2>
+            <p class="dialog-subtitle">Deseja comprar esta propriedade?</p>
+            <div class="property-details" id="dialogContent"></div>
+            <div class="dialog-buttons">
+                <button class="action-btn btn-buy" id="confirmBuyBtn" onclick="confirmBuy()">✓ Comprar</button>
+                <button class="action-btn btn-skip" onclick="declineBuy()">✗ Não Comprar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIALOG: Construir -->
+    <div class="dialog" id="buildDialog">
+        <div class="dialog-content">
+            <h2 class="dialog-title">🏘️ Construir</h2>
+            <p class="dialog-subtitle">Selecione onde deseja construir</p>
+            <div id="buildDialogContent"></div>
+            <div class="dialog-buttons" style="margin-top:16px;">
+                <button class="action-btn btn-skip" onclick="declineBuild()">✗ Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIALOG: Regras -->
+    <div class="dialog" id="rulesDialog">
+        <div class="dialog-content rules-dialog-content" style="max-width:540px;">
+            <h2 class="dialog-title">📖 Regras do Jogo</h2>
+            <div style="margin-top:20px;">
+                <div class="rule-section">
+                    <div class="rule-title">🎯 Objetivo</div>
+                    <div class="rule-text">Seja o jogador mais rico. Compre propriedades, construa casas e hotéis, e receba aluguel dos adversários.</div>
+                </div>
+                <div class="rule-section">
+                    <div class="rule-title">💰 Início</div>
+                    <div class="rule-text">Cada jogador começa com $2.000.</div>
+                </div>
+                <div class="rule-section">
+                    <div class="rule-title">🎲 Turno</div>
+                    <ul class="rule-list">
+                        <li>Clique em "Jogar Dados" para rolar dois dados</li>
+                        <li>Mova seu peão o número de casas indicado</li>
+                        <li>Ao passar pela SAÍDA receba $200</li>
+                    </ul>
+                </div>
+                <div class="rule-section">
+                    <div class="rule-title">🏠 Propriedades</div>
+                    <ul class="rule-list">
+                        <li>Caia em uma propriedade livre para comprar</li>
+                        <li>Reúna todas as propriedades de uma cor para construir</li>
+                        <li>1ª a 4ª casa: 50% do preço | Hotel: 100% do preço</li>
+                    </ul>
+                </div>
+                <div class="rule-section">
+                    <div class="rule-title">💸 Aluguéis</div>
+                    <ul class="rule-list">
+                        <li>Sem casa: 10% | 1 casa: 30% | 2 casas: 50%</li>
+                        <li>3 casas: 70% | 4 casas: 90% | Hotel: 200%</li>
+                    </ul>
+                </div>
+                <div class="rule-section">
+                    <div class="rule-title">🎲 Eventos</div>
+                    <ul class="rule-list">
+                        <li>SORTE: Ganhe ou pague valores aleatórios</li>
+                        <li>IMPOSTO: Pague $200 ou $100</li>
+                        <li>PRESÍDIO: Fique preso por uma rodada</li>
+                    </ul>
+                </div>
+                <div class="rule-section">
+                    <div class="rule-title">💥 Fim</div>
+                    <div class="rule-text">Quando um jogador falir, o jogo termina. O jogador com mais dinheiro vence!</div>
+                </div>
+            </div>
+            <button class="action-btn btn-roll" onclick="closeRules()" style="width:100%;margin-top:20px;">✓ Entendi</button>
+        </div>
+    </div>
+
+    <!-- DIALOG: Game Over -->
+    <div class="dialog" id="gameOverDialog">
+        <div class="dialog-content" style="max-width:420px;">
+            <div id="gameOverContent"></div>
+            <button class="action-btn btn-roll" onclick="goToMenu()" style="width:100%;margin-top:4px;">🏠 Menu Principal</button>
+        </div>
+    </div>
+
+    <!-- DIALOG: Conquistas -->
+    <div class="dialog" id="achievementsDialog">
+        <div class="dialog-content" style="max-width:600px;">
+            <h2 class="dialog-title">🏆 Todas as Conquistas</h2>
+            <p class="dialog-subtitle">Seus feitos e progresso no jogo</p>
+            <div id="allAchievementsContent" style="margin-top:20px;max-height:400px;overflow-y:auto;"></div>
+            <button class="action-btn btn-skip" onclick="closeAchievementsDialog()" style="width:100%;margin-top:16px;">✗ Fechar</button>
+        </div>
+    </div>
+
+    <script>
+    // SISTEMA DE ÁUDIO
+    class SoundManager {
+        constructor() {
+            this.audioContext = null;
+            this.sounds = {};
+            this.enabled = true;
+            this.initAudio();
+        }
+
+        initAudio() {
+            try {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                this.createSounds();
+            } catch (e) {
+                console.log('Audio não suportado');
+                this.enabled = false;
+            }
+        }
+
+        createSounds() {
+            this.sounds.dice = () => {
+                this.playTone(300, 0.05, 'square');
+                setTimeout(() => this.playTone(400, 0.05, 'square'), 50);
+                setTimeout(() => this.playTone(500, 0.05, 'square'), 100);
+            };
+            this.sounds.buy = () => {
+                this.playTone(523, 0.1, 'square');
+                setTimeout(() => this.playTone(659, 0.1, 'square'), 100);
+                setTimeout(() => this.playTone(784, 0.2, 'square'), 200);
+            };
+            this.sounds.build = () => {
+                this.playTone(440, 0.1, 'triangle');
+                setTimeout(() => this.playTone(554, 0.1, 'triangle'), 100);
+                setTimeout(() => this.playTone(659, 0.2, 'triangle'), 200);
+            };
+            this.sounds.moneyGain = () => {
+                this.playTone(880, 0.1, 'sine');
+                setTimeout(() => this.playTone(1047, 0.2, 'sine'), 100);
+                setTimeout(() => this.playTone(1319, 0.1, 'sine'), 200);
+            };
+            this.sounds.moneyLoss = () => {
+                this.playTone(220, 0.2, 'sawtooth');
+                setTimeout(() => this.playTone(165, 0.3, 'sawtooth'), 150);
+                setTimeout(() => this.playTone(110, 0.2, 'sawtooth'), 300);
+            };
+            this.sounds.move = () => {
+                this.playTone(440, 0.05, 'sine');
+                setTimeout(() => this.playTone(554, 0.05, 'sine'), 30);
+            };
+            this.sounds.notify = () => {
+                this.playTone(660, 0.1, 'sine');
+                setTimeout(() => this.playTone(880, 0.1, 'sine'), 100);
+            };
+            this.sounds.error = () => {
+                this.playTone(165, 0.3, 'sawtooth');
+                setTimeout(() => this.playTone(110, 0.2, 'sawtooth'), 150);
+            };
+            this.sounds.win = () => {
+                this.playTone(523, 0.1, 'square');
+                setTimeout(() => this.playTone(659, 0.1, 'square'), 100);
+                setTimeout(() => this.playTone(784, 0.1, 'square'), 200);
+                setTimeout(() => this.playTone(1047, 0.3, 'square'), 300);
+            };
+            this.sounds.achievement = () => {
+                this.playTone(523, 0.1, 'square');
+                setTimeout(() => this.playTone(659, 0.1, 'square'), 50);
+                setTimeout(() => this.playTone(784, 0.1, 'square'), 100);
+                setTimeout(() => this.playTone(1047, 0.2, 'square'), 150);
+                setTimeout(() => this.playTone(1319, 0.3, 'square'), 250);
+            };
+            this.sounds.doubles = () => {
+                this.playTone(660, 0.1, 'square');
+                setTimeout(() => this.playTone(880, 0.1, 'square'), 100);
+                setTimeout(() => this.playTone(1047, 0.2, 'square'), 200);
+            };
+            this.sounds.bankrupt = () => {
+                this.playTone(110, 0.3, 'sawtooth');
+                setTimeout(() => this.playTone(82, 0.4, 'sawtooth'), 200);
+                setTimeout(() => this.playTone(55, 0.5, 'sawtooth'), 400);
+            };
+            this.sounds.passGo = () => {
+                this.playTone(440, 0.1, 'sine');
+                setTimeout(() => this.playTone(554, 0.1, 'sine'), 100);
+                setTimeout(() => this.playTone(659, 0.2, 'sine'), 200);
+            };
+            this.sounds.jail = () => {
+                this.playTone(165, 0.2, 'sawtooth');
+                setTimeout(() => this.playTone(130, 0.3, 'sawtooth'), 150);
+                setTimeout(() => this.playTone(98, 0.2, 'sawtooth'), 300);
+            };
+            this.sounds.chance = () => {
+                this.playTone(392, 0.1, 'triangle');
+                setTimeout(() => this.playTone(523, 0.1, 'triangle'), 100);
+                setTimeout(() => this.playTone(659, 0.1, 'triangle'), 200);
+            };
+        }
+
+        playTone(frequency, duration, type = 'sine') {
+            if (!this.enabled || !this.audioContext) return;
+
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+
+            gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+
+            oscillator.start(this.audioContext.currentTime);
+            oscillator.stop(this.audioContext.currentTime + duration);
+        }
+
+        play(soundName) {
+            if (this.sounds[soundName]) {
+                this.sounds[soundName]();
+            }
+        }
+    }
+
+    const soundManager = new SoundManager();
+
+    // SISTEMA DE CONQUISTAS
+    const ACHIEVEMENTS = [
+        { id: 'first_property', name: 'Primeira Propriedade', desc: 'Compre sua primeira propriedade', icon: '🏠', condition: (player) => player.properties.length >= 1 },
+        { id: 'property_mogul', name: 'Magnata Imobiliário', desc: 'Tenha 10 propriedades', icon: '🏰', condition: (player) => player.properties.length >= 10 },
+        { id: 'house_builder', name: 'Construtor', desc: 'Construa 5 casas', icon: '🔨', condition: () => Object.values(gameState.propertyHouses).reduce((sum, houses) => sum + (houses < 5 ? houses : 0), 0) >= 5 },
+        { id: 'hotel_tycoon', name: 'Hotelão', desc: 'Construa um hotel', icon: '🏨', condition: () => Object.values(gameState.propertyHouses).some(houses => houses >= 5) },
+        { id: 'lucky_roller', name: 'Sortudo', desc: 'Tire um duplo (dados iguais)', icon: '🎲', condition: () => gameState.dice1 === gameState.dice2 && gameState.dice1 > 0 },
+        { id: 'bankrupt_enemy', name: 'Falência', desc: 'Faça um adversário falir', icon: '💸', condition: () => gameState.players.filter(p => p.money <= 0).length >= 1 },
+        { id: 'rich_player', name: 'Rico', desc: 'Acumule $5000', icon: '💰', condition: (player) => player.money >= 5000 },
+        { id: 'round_master', name: 'Mestre de Rodadas', desc: 'Complete 10 rodadas', icon: '🔄', condition: () => gameState.round >= 10 },
+        { id: 'speed_demon', name: 'Demônio da Velocidade', desc: 'Ganhe em menos de 15 rodadas', condition: () => gameState.round >= 15 && !gameState.gameActive },
+        { id: 'perfect_game', name: 'Jogo Perfeito', desc: 'Ganhe sem nunca falir', icon: '⭐', condition: (player) => !gameState.gameActive && player.money > 0 && gameState.players.filter(p => p.id === player.id).every(p => p.money > 0) }
+    ];
+
+    const achievementsState = {
+        unlocked: [],
+        progress: {}
+    };
+
+    // DADOS DO JOGO
+    const BOARD_SIZE = 40;
+    const PLAYER_COLORS = ['p0', 'p1', 'p2', 'p3'];
+    const PLAYER_NAMES = ['Jogador 1', 'Jogador 2', 'Jogador 3', 'Jogador 4'];
+    const PLAYER_NUMS = ['1', '2', '3', '4'];
+    
+    let STARTING_MONEY = 2000;
+    let GAME_MODE = 'classic';
+    
+    const gameState = {
+        players: [],
+        currentPlayerIndex: 0,
+        round: 1,
+        diceValue: 0,
+        dice1: 0,
+        dice2: 0,
+        propertyOwners: {},
+        propertyHouses: {},
+        started: false,
+        selectedProperty: null,
+        gameActive: true,
+        gameLog: [],
+        stats: {
+            totalRolls: 0,
+            totalMoneySpent: 0,
+            totalMoneyEarned: 0,
+            propertiesBought: 0,
+            housesBuilt: 0,
+            hotelsBuilt: 0,
+            rentPaid: 0,
+            rentReceived: 0
+        }
+    };
+
+    const GAME_MODES = {
+        classic: {
+            name: 'Clássico',
+            playerCount: 4,
+            startingMoney: 2000,
+            description: 'Modo tradicional do Banco Imobiliário'
+        },
+        rapid: {
+            name: 'Rápido',
+            playerCount: 2,
+            startingMoney: 5000,
+            description: 'Partida rápida com mais dinheiro e aceleração'
+        },
+        challenge: {
+            name: 'Desafio',
+            playerCount: 4,
+            startingMoney: 1500,
+            description: 'Eventos econômicos aleatórios mudam o jogo'
+        }
+    };
+
+    // Propriedades do tabuleiro
+    const PROPERTIES = [
+        { id: 0, name: "SAÍDA", type: "start", group: "special", color: "", price: 0 },
+        { id: 1, name: "Av. Pres. Vargas", type: "property", group: "brown", color: "#8B4513", price: 60 },
+        { id: 2, name: "Companhia Luz", type: "utility", group: "utility", color: "#1a1a2e", price: 150 },
+        { id: 3, name: "Av. Brasil", type: "property", group: "brown", color: "#8B4513", price: 60 },
+        { id: 4, name: "IMPOSTO DE RENDA", type: "tax", group: "special", color: "", price: -200 },
+        { id: 5, name: "Estação Rodoviária", type: "railroad", group: "railroad", color: "#1c1c1c", price: 200 },
+        { id: 6, name: "Av. Paulista", type: "property", group: "lightblue", color: "#87CEEB", price: 100 },
+        { id: 7, name: "SORTE", type: "chance", group: "special", color: "", price: 0 },
+        { id: 8, name: "Rua Augusta", type: "property", group: "lightblue", color: "#87CEEB", price: 100 },
+        { id: 9, name: "Av. Brigadeiro", type: "property", group: "lightblue", color: "#87CEEB", price: 120 },
+        { id: 10, name: "PRESÍDIO", type: "jail", group: "special", color: "", price: 0 },
+        { id: 11, name: "Av. Ipiranga", type: "property", group: "pink", color: "#FF69B4", price: 140 },
+        { id: 12, name: "Companhia Água", type: "utility", group: "utility", color: "#1a1a2e", price: 150 },
+        { id: 13, name: "Rua 25 de Março", type: "property", group: "pink", color: "#FF69B4", price: 140 },
+        { id: 14, name: "Rua São Bento", type: "property", group: "pink", color: "#FF69B4", price: 160 },
+        { id: 15, name: "Estação Ferroviária", type: "railroad", group: "railroad", color: "#1c1c1c", price: 200 },
+        { id: 16, name: "Av. Atlântica", type: "property", group: "orange", color: "#FFA500", price: 180 },
+        { id: 17, name: "SORTE", type: "chance", group: "special", color: "", price: 0 },
+        { id: 18, name: "Av. Copacabana", type: "property", group: "orange", color: "#FFA500", price: 180 },
+        { id: 19, name: "Av. Niemeyer", type: "property", group: "orange", color: "#FFA500", price: 200 },
+        { id: 20, name: "ESTACIONAMENTO GRATUITO", type: "parking", group: "special", color: "", price: 0 },
+        { id: 21, name: "Av. Faria Lima", type: "property", group: "red", color: "#DC143C", price: 220 },
+        { id: 22, name: "SORTE", type: "chance", group: "special", color: "", price: 0 },
+        { id: 23, name: "Av. Cidade Jardim", type: "property", group: "red", color: "#DC143C", price: 220 },
+        { id: 24, name: "Av. Europa", type: "property", group: "red", color: "#DC143C", price: 240 },
+        { id: 25, name: "Estação Aeroportuária", type: "railroad", group: "railroad", color: "#1c1c1c", price: 200 },
+        { id: 26, name: "Av. Morumbi", type: "property", group: "yellow", color: "#FFD700", price: 260 },
+        { id: 27, name: "Av. Berrini", type: "property", group: "yellow", color: "#FFD700", price: 260 },
+        { id: 28, name: "Companhia Telefone", type: "utility", group: "utility", color: "#1a1a2e", price: 150 },
+        { id: 29, name: "Av. Nações Unidas", type: "property", group: "yellow", color: "#FFD700", price: 280 },
+        { id: 30, name: "VA PARA O PRESÍDIO", type: "gotojail", group: "special", color: "", price: 0 },
+        { id: 31, name: "Al. Santos", type: "property", group: "green", color: "#32CD32", price: 300 },
+        { id: 32, name: "Av. Brasil", type: "property", group: "green", color: "#32CD32", price: 300 },
+        { id: 33, name: "SORTE", type: "chance", group: "special", color: "", price: 0 },
+        { id: 34, name: "Rua Haddock Lobo", type: "property", group: "green", color: "#32CD32", price: 320 },
+        { id: 35, name: "Estação Metropolitana", type: "railroad", group: "railroad", color: "#1c1c1c", price: 200 },
+        { id: 36, name: "SORTE", type: "chance", group: "special", color: "", price: 0 },
+        { id: 37, name: "Av. 9 de Julho", type: "property", group: "darkblue", color: "#0000CD", price: 350 },
+        { id: 38, name: "IMPOSTO DE LUXO", type: "tax", group: "special", color: "", price: -100 },
+        { id: 39, name: "Av. Brigadeiro Faria Lima", type: "property", group: "darkblue", color: "#0000CD", price: 400 }
+    ];
+
+    const GROUPS = {
+        brown: ['Av. Pres. Vargas', 'Av. Brasil'],
+        lightblue: ['Av. Paulista', 'Rua Augusta', 'Av. Brigadeiro'],
+        pink: ['Av. Ipiranga', 'Rua 25 de Março', 'Rua São Bento'],
+        orange: ['Av. Atlântica', 'Av. Copacabana', 'Av. Niemeyer'],
+        red: ['Av. Faria Lima', 'Av. Cidade Jardim', 'Av. Europa'],
+        yellow: ['Av. Morumbi', 'Av. Berrini', 'Av. Nações Unidas'],
+        green: ['Al. Santos', 'Av. Brasil', 'Rua Haddock Lobo'],
+        darkblue: ['Av. 9 de Julho', 'Av. Brigadeiro Faria Lima']
+    };
+
+    // FUNÇÕES DO JOGO
+    function getCurrentPlayer() {
+        return gameState.players[gameState.currentPlayerIndex];
+    }
+
+    function switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function goToMenu() {
+        if (gameState.gameActive && !confirm('Voltar ao menu? O progresso será perdido.')) return;
+        gameState.gameActive = false;
+        switchScreen('menuScreen');
+    }
+
+    function showGameModes() {
+        document.getElementById('gameModesDialog').classList.add('show');
+    }
+
+    function closeGameModes() {
+        document.getElementById('gameModesDialog').classList.remove('show');
+    }
+
+    function selectGameMode(mode) {
+        GAME_MODE = mode;
+        const modeConfig = GAME_MODES[mode];
+        STARTING_MONEY = modeConfig.startingMoney;
+        closeGameModes();
+        startGameSetup();
+    }
+
+    function startGameSetup() {
+        const modeConfig = GAME_MODES[GAME_MODE];
+        generatePlayerSetup(modeConfig.playerCount);
+        switchScreen('setupScreen');
+    }
+
+    function generatePlayerSetup(count) {
+        const container = document.getElementById('playersSetup');
+        container.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+            const div = document.createElement('div');
+            div.className = `player-setup ${PLAYER_COLORS[i]}`;
+            div.innerHTML = `
+                <div class="player-number">JOGADOR ${i + 1}</div>
+                <input type="text" class="player-input" id="playerName${i}" placeholder="Nome do jogador" value="${PLAYER_NAMES[i]}">
+                <div class="player-type-select">
+                    <button class="type-btn ${i === 0 ? 'active' : ''}" onclick="setPlayerType(${i}, 'human')" id="type-human-${i}">Humano</button>
+                    <button class="type-btn ${i > 0 ? 'active' : ''}" onclick="setPlayerType(${i}, 'ai')" id="type-ai-${i}">IA</button>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+    }
+
+    function setPlayerType(index, type) {
+        document.getElementById(`type-human-${index}`).classList.toggle('active', type === 'human');
+        document.getElementById(`type-ai-${index}`).classList.toggle('active', type === 'ai');
+    }
+
+    function startGame() {
+        const modeConfig = GAME_MODES[GAME_MODE];
+        gameState.players = [];
+        
+        for (let i = 0; i < modeConfig.playerCount; i++) {
+            const nameInput = document.getElementById(`playerName${i}`);
+            const name = nameInput ? nameInput.value : PLAYER_NAMES[i];
+            const typeBtn = document.querySelector(`.player-setup:nth-child(${i + 1}) .type-btn.active`);
+            const isAI = typeBtn && typeBtn.textContent.includes('IA');
+            
+            gameState.players.push({
+                id: i,
+                name: name || PLAYER_NAMES[i],
+                money: modeConfig.startingMoney,
+                properties: [],
+                position: 0,
+                inJail: false,
+                jailTurns: 0,
+                type: isAI ? 'ai' : 'human'
+            });
+        }
+        
+        gameState.currentPlayerIndex = 0;
+        gameState.round = 1;
+        gameState.started = true;
+        gameState.gameActive = true;
+        gameState.propertyOwners = {};
+        gameState.propertyHouses = {};
+        gameState.gameLog = [];
+        gameState.diceValue = 0;
+        gameState.dice1 = 0;
+        gameState.dice2 = 0;
+        
+        switchScreen('gameScreen');
+        updateUI();
+        addLog(`Partida iniciada - Modo: ${modeConfig.name}`, 'success');
+        
+        if (getCurrentPlayer().type === 'ai') {
+            setTimeout(rollDice, 1800);
+        }
+    }
+
+    function showNotification(title, message, type = 'info') {
+        const container = document.querySelector('.notification-container') || createNotificationContainer();
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        
+        const icons = {
+            success: '✅',
+            warning: '⚠️',
+            error: '❌',
+            info: 'ℹ️'
+        };
+        
+        notification.innerHTML = `
+            <span class="notif-icon">${icons[type]}</span>
+            <div class="notif-body">
+                <div class="notif-title">${title}</div>
+                <div class="notif-msg">${message}</div>
+            </div>
+        `;
+        
+        container.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('hide');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    function createNotificationContainer() {
+        const container = document.createElement('div');
+        container.className = 'notification-container';
+        document.body.appendChild(container);
+        return container;
+    }
+
+    function addLog(message, type = 'info') {
+        const log = document.getElementById('gameLog');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        
+        const icons = {
+            action: '✅',
+            warning: '⚠️',
+            error: '❌',
+            info: 'ℹ️'
+        };
+        
+        entry.innerHTML = `
+            <span class="log-icon">${icons[type]}</span>
+            <span class="log-text">${message}</span>
+        `;
+        
+        log.insertBefore(entry, log.firstChild);
+        
+        // Manter apenas os últimos 20 logs
+        while (log.children.length > 20) {
+            log.removeChild(log.lastChild);
+        }
+    }
+
+    function updateUI() {
+        updateBoard();
+        updateSidePanel();
+        updatePlayersList();
+        updateStatusBar();
+        updateAchievements();
+        checkAchievements();
+    }
+
+    function updateAchievements() {
+        const container = document.getElementById('achievementsContent');
+        const recentAchievements = ACHIEVEMENTS.slice(0, 3);
+        
+        container.innerHTML = recentAchievements.map(achievement => {
+            const isUnlocked = achievementsState.unlocked.includes(achievement.id);
+            const player = getCurrentPlayer();
+            const progress = getAchievementProgress(achievement, player);
+            
+            return `
+                <div class="achievement-badge ${isUnlocked ? 'unlocked' : ''}" onclick="showAchievementDetails('${achievement.id}')">
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div class="achievement-info">
+                        <div class="achievement-name">${achievement.name}</div>
+                        <div class="achievement-desc">${achievement.desc}</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function getAchievementProgress(achievement, player) {
+        if (achievementsState.unlocked.includes(achievement.id)) return 100;
+        
+        switch(achievement.id) {
+            case 'first_property': return Math.min(100, (player.properties.length / 1) * 100);
+            case 'property_mogul': return Math.min(100, (player.properties.length / 10) * 100);
+            case 'house_builder': {
+                const houses = Object.values(gameState.propertyHouses).reduce((sum, h) => sum + (h < 5 ? h : 0), 0);
+                return Math.min(100, (houses / 5) * 100);
+            }
+            case 'hotel_tycoon': return Object.values(gameState.propertyHouses).some(h => h >= 5) ? 100 : 0;
+            case 'rich_player': return Math.min(100, (player.money / 5000) * 100);
+            case 'round_master': return Math.min(100, (gameState.round / 10) * 100);
+            default: return 0;
+        }
+    }
+
+    function checkAchievements() {
+        const player = getCurrentPlayer();
+        
+        ACHIEVEMENTS.forEach(achievement => {
+            if (!achievementsState.unlocked.includes(achievement.id)) {
+                try {
+                    if (achievement.condition(player)) {
+                        unlockAchievement(achievement);
+                    }
+                } catch (e) {
+                    // Ignorar erros em condições de conquista
+                }
+            }
+        });
+    }
+
+    function unlockAchievement(achievement) {
+        if (achievementsState.unlocked.includes(achievement.id)) return;
+        
+        achievementsState.unlocked.push(achievement.id);
+        soundManager.play('achievement');
+        
+        // Adicionar animação de tabuleiro
+        const board = document.getElementById('board');
+        board.classList.add('shaking');
+        setTimeout(() => board.classList.remove('shaking'), 500);
+        
+        showNotification(
+            '🏆 Conquista Desbloqueada!',
+            `${achievement.name} - ${achievement.desc}`,
+            'success'
+        );
+        
+        addLog(`🏆 ${achievement.name} desbloqueada!`, 'action');
+        updateAchievements();
+    }
+
+    function showAllAchievements() {
+        const container = document.getElementById('allAchievementsContent');
+        const player = getCurrentPlayer();
+        
+        container.innerHTML = `
+            <div style="display: grid; gap: 8px;">
+                ${ACHIEVEMENTS.map(achievement => {
+                    const isUnlocked = achievementsState.unlocked.includes(achievement.id);
+                    const progress = getAchievementProgress(achievement, player);
+                    
+                    return `
+                        <div class="achievement-badge ${isUnlocked ? 'unlocked' : ''}">
+                            <div class="achievement-icon">${achievement.icon}</div>
+                            <div class="achievement-info">
+                                <div class="achievement-name">${achievement.name}</div>
+                                <div class="achievement-desc">${achievement.desc}</div>
+                                <div class="achievement-progress">
+                                    <div class="achievement-progress-bar" style="width: ${progress}%"></div>
+                                </div>
+                            </div>
+                            ${isUnlocked ? '<div style="color: var(--success); font-size: 12px;">✓</div>' : '<div style="color: var(--text-muted); font-size: 12px;">🔒</div>'}
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+        
+        document.getElementById('achievementsDialog').classList.add('show');
+    }
+
+    function closeAchievementsDialog() {
+        document.getElementById('achievementsDialog').classList.remove('show');
+    }
+
+    function createMoneyAnimation(text, isNegative = false) {
+        const board = document.getElementById('board');
+        const moneyEl = document.createElement('div');
+        moneyEl.className = 'money-animation';
+        moneyEl.textContent = text;
+        moneyEl.style.color = isNegative ? '#ef4444' : '#4ade80';
+        moneyEl.style.left = '50%';
+        moneyEl.style.top = '50%';
+        moneyEl.style.transform = 'translate(-50%, -50%)';
+        
+        board.appendChild(moneyEl);
+        
+        setTimeout(() => moneyEl.remove(), 1000);
+    }
+
+    function showAchievementDetails(achievementId) {
+        const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+        if (!achievement) return;
+        
+        showNotification(
+            achievement.name,
+            achievement.desc,
+            achievementsState.unlocked.includes(achievementId) ? 'success' : 'info'
+        );
+    }
+
+    function getSquareClass(property) {
+        if (property.group === 'special') {
+            const specialMap = {
+                start: 'sq-corner',
+                tax: 'sq-tax',
+                jail: 'sq-jail',
+                parking: 'sq-parking',
+                gotojail: 'sq-gotojail',
+                chance: 'sq-chance'
+            };
+            return specialMap[property.type] || 'sq-chance';
+        }
+        
+        const colorMap = {
+            brown: 'sq-brown',
+            lightblue: 'sq-lightblue',
+            pink: 'sq-pink',
+            orange: 'sq-orange',
+            red: 'sq-red',
+            yellow: 'sq-yellow',
+            green: 'sq-green',
+            darkblue: 'sq-darkblue',
+            railroad: 'sq-railroad',
+            utility: 'sq-utility'
+        };
+        
+        return colorMap[property.group] || '';
+    }
+
+    function updateBoard() {
+        const board = document.getElementById('board');
+        board.innerHTML = '';
+
+        const playerPositions = {};
+        gameState.players.forEach(p => {
+            if (!playerPositions[p.position]) playerPositions[p.position] = [];
+            playerPositions[p.position].push(p);
+        });
+
+        for (let i = 0; i < BOARD_SIZE; i++) {
+            const property = PROPERTIES[i];
+            const sq = document.createElement('div');
+            sq.className = 'square ' + getSquareClass(property);
+            sq.setAttribute('data-property-id', property.id);
+
+            const isCurrentPosition = gameState.players.some(p => p.position === i && p.id === gameState.currentPlayerIndex);
+            if (isCurrentPosition) sq.classList.add('current-position');
+
+            // Posicionar no grid
+            let row, col;
+            if (i === 0) { row = 11; col = 11; }
+            else if (i < 10) { row = 11; col = 11 - i; }
+            else if (i === 10) { row = 11; col = 1; }
+            else if (i < 20) { row = 21 - i; col = 1; }
+            else if (i === 20) { row = 1; col = 1; }
+            else if (i < 30) { row = 1; col = i - 19; }
+            else if (i === 30) { row = 1; col = 11; }
+            else { row = i - 29; col = 11; }
+
+            sq.style.gridColumn = col;
+            sq.style.gridRow = row;
+
+            let html = '';
+
+            // Barra de cor para propriedades
+            if (property.group !== 'special' && property.type === 'property') {
+                html += `<div class="square-color-bar" style="background:${property.color};"></div>`;
+            }
+
+            // Nome da propriedade
+            html += `<div class="square-name">${property.name}</div>`;
+
+            // Preço
+            if (property.price > 0) {
+                html += `<div class="square-price">$${property.price}</div>`;
+            }
+
+            // Casas/hotéis
+            if (property.type === 'property') {
+                const houses = gameState.propertyHouses[i] || 0;
+                if (houses > 0) {
+                    html += `<div class="square-houses">`;
+                    if (houses < 5) {
+                        for (let h = 0; h < houses; h++) html += `<div class="house-icon"></div>`;
+                    } else {
+                        html += `<div class="hotel-icon"></div>`;
+                    }
+                    html += `</div>`;
+                }
+            }
+
+            // Barra de dono
+            const ownerId = gameState.propertyOwners[i];
+            if (ownerId !== undefined) {
+                html += `<div class="owner-bar ${PLAYER_COLORS[ownerId]}"></div>`;
+            }
+
+            // Tokens dos jogadores
+            html += `<div class="player-tokens">`;
+            if (playerPositions[i]) {
+                playerPositions[i].forEach(p => {
+                    const isCurrent = p.id === gameState.currentPlayerIndex;
+                    html += `<div class="player-token ${PLAYER_COLORS[p.id]} ${isCurrent ? 'current' : ''}" title="${p.name}">${PLAYER_NUMS[p.id]}</div>`;
+                });
+            }
+            html += `</div>`;
+
+            sq.innerHTML = html;
+            board.appendChild(sq);
+        }
+    }
+
+    function updateSidePanel() {
+        const player = getCurrentPlayer();
+        const colorClass = PLAYER_COLORS[player.id];
+
+        const avatar = document.getElementById('cpAvatar');
+        avatar.className = `cp-avatar ${colorClass}`;
+        avatar.textContent = PLAYER_NUMS[player.id];
+
+        document.getElementById('currentPlayerName').textContent = player.name;
+        document.getElementById('playerTypeBadge').textContent = player.type === 'human' ? '👤 Humano' : '🤖 IA';
+        document.getElementById('currentPlayerMoney').textContent = '$' + player.money.toLocaleString('pt-BR');
+        document.getElementById('currentPlayerPosition').textContent = PROPERTIES[player.position].name;
+        document.getElementById('roundIndicator').textContent = `Rodada ${gameState.round}`;
+        document.getElementById('turnIndicatorText').textContent = player.name;
+
+        // Atualizar dados
+        document.getElementById('dice1').textContent = gameState.dice1 || '-';
+        document.getElementById('dice2').textContent = gameState.dice2 || '-';
+        document.getElementById('diceTotal').textContent = gameState.diceValue || '-';
+
+        // Habilitar/desabilitar botões
+        const rollBtn = document.getElementById('rollBtn');
+        const buyBtn = document.getElementById('buyBtn');
+        const buildBtn = document.getElementById('buildBtn');
+
+        buyBtn.disabled = !gameState.selectedProperty || player.money < gameState.selectedProperty.price;
+        
+        // Verificar se pode construir
+        let canBuild = false;
+        for (const g in GROUPS) {
+            const gp = GROUPS[g];
+            const owned = gp.filter(n => {
+                const pr = PROPERTIES.find(p => p.name === n);
+                return gameState.propertyOwners[pr.id] === player.id;
+            });
+            if (owned.length === gp.length) {
+                const pr = PROPERTIES.find(p => p.name === gp[0]);
+                if ((gameState.propertyHouses[pr.id] || 0) < 5) { canBuild = true; break; }
+            }
+        }
+        buildBtn.disabled = !canBuild;
+        
+        skipBtn.disabled = gameState.diceValue === 0;
+        
+        // Iniciar turno da IA automaticamente
+        if (player.type === 'ai' && gameState.diceValue === 0) {
+            rollBtn.classList.add('ai-thinking');
+            rollBtn.disabled = true;
+            setTimeout(() => aiTurn(), 1500);
+        }
+    }
+
+    function updatePlayersList() {
+        const container = document.getElementById('playersList');
+        const sorted = [...gameState.players].sort((a, b) => b.money - a.money);
+        
+        container.innerHTML = sorted.map(p => {
+            const isActive = p.id === gameState.currentPlayerIndex;
+            const houseCount = p.properties.reduce((s, pId) => s + (gameState.propertyHouses[pId] || 0), 0);
+            return `
+                <div class="player-mini-card ${PLAYER_COLORS[p.id]} ${isActive ? 'active' : ''}">
+                    <div class="player-mini-dot ${PLAYER_COLORS[p.id]}"></div>
+                    <div class="player-mini-info">
+                        <div class="player-mini-name">${p.name}</div>
+                        <div class="player-mini-stats">
+                            <span class="player-mini-money">$${p.money.toLocaleString('pt-BR')}</span>
+                            <span class="player-mini-props">🏠 ${p.properties.length} | 🏘️ ${houseCount}</span>
+                        </div>
+                    </div>
+                    ${isActive ? '<span class="player-turn-arrow">▶</span>' : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    function updateStatusBar() {
+        const player = getCurrentPlayer();
+        const dot = document.getElementById('statusDot');
+        const text = document.getElementById('statusText');
+
+        if (player.type === 'ai' && gameState.diceValue === 0) {
+            dot.className = 'status-dot wait';
+            text.textContent = `${player.name} está pensando...`;
+        } else if (gameState.diceValue > 0) {
+            dot.className = 'status-dot active';
+            text.textContent = `${player.name} jogou ${gameState.dice1} + ${gameState.dice2} = ${gameState.diceValue} | Posição: ${PROPERTIES[player.position].name}`;
+        } else {
+            dot.className = 'status-dot active';
+            text.textContent = `Turno de ${player.name} - clique em Jogar Dados`;
+        }
+    }
+
+    function rollDice() {
+        const player = getCurrentPlayer();
+        if (gameState.diceValue !== 0) return;
+
+        soundManager.play('dice');
+        gameState.stats.totalRolls++;
+
+        const d1 = Math.floor(Math.random() * 6) + 1;
+        const d2 = Math.floor(Math.random() * 6) + 1;
+        gameState.dice1 = d1;
+        gameState.dice2 = d2;
+        gameState.diceValue = d1 + d2;
+
+        // Animação dos dados
+        const dice1El = document.getElementById('dice1');
+        const dice2El = document.getElementById('dice2');
+        dice1El.classList.add('rolling');
+        dice2El.classList.add('rolling');
+        
+        setTimeout(() => {
+            dice1El.classList.remove('rolling');
+            dice2El.classList.remove('rolling');
+            dice1El.textContent = d1;
+            dice2El.textContent = d2;
+            document.getElementById('diceTotal').textContent = d1 + d2;
+        }, 400);
+
+        // Mover jogador
+        let oldPos = player.position;
+        player.position = (player.position + gameState.diceValue) % BOARD_SIZE;
+
+        // Passar pela saída
+        if (oldPos + gameState.diceValue >= BOARD_SIZE) {
+            player.money += 200;
+            gameState.stats.totalMoneyEarned += 200;
+            soundManager.play('passGo');
+        }
+
+        // Processar casa onde parou
+        setTimeout(() => {
+            handleLandedOnProperty();
+            updateUI();
+        }, 800);
+    }
+
+    function handleLandedOnProperty() {
+        const player = getCurrentPlayer();
+        const property = PROPERTIES[player.position];
+
+        if (property.type === 'tax') {
+            const tax = Math.abs(property.price);
+            player.money -= tax;
+            gameState.stats.totalMoneySpent += tax;
+            soundManager.play('moneyLoss');
+            
+            // Criar animação de dinheiro negativo
+            createMoneyAnimation(`-$${tax}`, true);
+            
+            addLog(`${player.name} pagou imposto: -$${tax}`, 'warning');
+            showNotification('Imposto!', `-$${tax}`, 'warning');
+            checkPlayerBankrupt();
+        } else if (property.type === 'chance') {
+            soundManager.play('chance');
+            const events = [
+                { money: 50, title: 'Boa sorte!', msg: '+$50 encontrados' },
+                { money: -50, title: 'Má sorte!', msg: '-$50 de multa' },
+                { money: 100, title: 'Prêmio!', msg: '+$100 recebidos' },
+                { money: -100, title: 'Despesa!', msg: '-$100 pagos' }
+            ];
+            const ev = events[Math.floor(Math.random() * events.length)];
+            player.money += ev.money;
+            soundManager.play(ev.money > 0 ? 'moneyGain' : 'moneyLoss');
+            addLog(`${player.name} sorte: ${ev.msg}`, 'warning');
+            showNotification(ev.title, ev.msg, ev.money > 0 ? 'success' : 'warning');
+            checkPlayerBankrupt();
+        } else if (property.type === 'gotojail') {
+            player.position = 10;
+            player.inJail = true;
+            player.jailTurns = 3;
+            soundManager.play('jail');
+            addLog(`${player.name} foi para o PRESÍDIO!`, 'error');
+            showNotification('Presídio!', `${player.name} ficará preso`, 'error');
+        } else if (property.type === 'railroad' || property.type === 'utility') {
+            const owner = gameState.propertyOwners[property.id];
+            if (owner !== undefined && owner !== player.id) {
+                const ownerPlayer = gameState.players[owner];
+                const rent = property.type === 'railroad' ? 50 : 100;
+                player.money -= rent;
+                ownerPlayer.money += rent;
+                soundManager.play('moneyLoss');
+                addLog(`${player.name} pagou aluguel $${rent} para ${ownerPlayer.name}`, 'warning');
+                showNotification('Aluguel pago!', `-$${rent} para ${ownerPlayer.name}`, 'warning');
+                checkPlayerBankrupt();
+            }
+        } else if (property.type === 'property') {
+            const owner = gameState.propertyOwners[property.id];
+            if (owner !== undefined && owner !== player.id) {
+                const ownerPlayer = gameState.players[owner];
+                const houses = gameState.propertyHouses[property.id] || 0;
+                let rent = 0;
+                if (houses === 0) rent = Math.ceil(property.price * 0.1);
+                else if (houses < 4) rent = Math.ceil(property.price * (0.2 + houses * 0.2));
+                else if (houses === 4) rent = Math.ceil(property.price * 0.9);
+                else rent = property.price * 2;
+
+                player.money -= rent;
+                ownerPlayer.money += rent;
+                soundManager.play('moneyLoss');
+                addLog(`${player.name} pagou aluguel $${rent} para ${ownerPlayer.name}`, 'warning');
+                showNotification('Aluguel pago!', `-$${rent} para ${ownerPlayer.name}`, 'warning');
+                checkPlayerBankrupt();
+            } else if (owner === undefined) {
+                addLog(`${player.name} caiu em ${property.name} (livre)`, 'info');
+                gameState.selectedProperty = property;
+                document.getElementById('buyBtn').disabled = false;
+                
+                // Mostrar diálogo automaticamente para humanos
+                if (player.type === 'human') {
+                    setTimeout(() => buyProperty(), 500);
+                }
+            }
+        }
+    }
+
+    function buyProperty() {
+        const property = gameState.selectedProperty;
+        if (!property) return;
+
+        const player = getCurrentPlayer();
+        
+        document.getElementById('dialogTitle').textContent = `🏠 ${property.name}`;
+        document.getElementById('dialogContent').innerHTML = `
+            <div class="property-detail-line">
+                <span class="detail-label">Preço</span>
+                <span class="detail-value">$${property.price}</span>
+            </div>
+            <div class="property-detail-line">
+                <span class="detail-label">Seu saldo</span>
+                <span class="detail-value ${player.money >= property.price ? 'positive' : 'negative'}">$${player.money}</span>
+            </div>
+            <div class="property-detail-line">
+                <span class="detail-label">Após compra</span>
+                <span class="detail-value">$${player.money - property.price}</span>
+            </div>
+        `;
+        
+        document.getElementById('propertyDialog').classList.add('show');
+    }
+
+    function confirmBuy() {
+        const player = getCurrentPlayer();
+        const property = gameState.selectedProperty;
+        
+        if (player.money >= property.price) {
+            player.money -= property.price;
+            player.properties.push(property.id);
+            gameState.propertyOwners[property.id] = player.id;
+            gameState.stats.totalMoneySpent += property.price;
+            gameState.stats.propertiesBought++;
+            soundManager.play('buy');
+            addLog(`${player.name} comprou ${property.name} por $${property.price}`, 'action');
+            showNotification('Propriedade comprada!', `${property.name} - $${property.price}`, 'success');
+        }
+        
+        declineBuy();
+        updateUI();
+    }
+
+    function declineBuy() {
+        document.getElementById('propertyDialog').classList.remove('show');
+        gameState.selectedProperty = null;
+        document.getElementById('buyBtn').disabled = true;
+    }
+
+    function buildHouse() {
+        const player = getCurrentPlayer();
+        let completedGroups = [];
+        for (const g in GROUPS) {
+            const gp = GROUPS[g];
+            const owned = gp.filter(n => {
+                const pr = PROPERTIES.find(p => p.name === n);
+                return gameState.propertyOwners[pr.id] === player.id;
+            });
+            if (owned.length === gp.length) {
+                completedGroups.push({ groupName: g, props: gp.map(n => PROPERTIES.find(p => p.name === n)) });
+            }
+        }
+        if (!completedGroups.length) { showNotification('Sem grupos!', 'Você não tem um grupo completo', 'error'); return; }
+
+        let html = '<div style="display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto;">';
+        completedGroups.forEach(group => {
+            html += `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-top:8px;">${group.groupName}</div>`;
+            group.props.forEach(prop => {
+                const houses = gameState.propertyHouses[prop.id] || 0;
+                const costHouse = Math.ceil(prop.price * 0.5);
+                const costHotel = prop.price;
+                if (houses < 4) {
+                    html += `<button onclick="buildHouseOnProperty(${prop.id})" style="width:100%;padding:10px 14px;background:var(--bg-card2);border:1px solid var(--border);border-left:3px solid #22c55e;border-radius:var(--radius-sm);cursor:pointer;text-align:left;color:var(--text-primary);font-size:12px;font-weight:600;font-family:inherit;display:flex;justify-content:space-between;align-items:center;">
+                        <span>${prop.name} (${houses} 🏠)</span>
+                        <span style="color:#4ade80;font-weight:700;">-$${costHouse}</span>
+                    </button>`;
+                } else if (houses === 4) {
+                    html += `<button onclick="buildHotelOnProperty(${prop.id})" style="width:100%;padding:10px 14px;background:var(--bg-card2);border:1px solid var(--border);border-left:3px solid #ef4444;border-radius:var(--radius-sm);cursor:pointer;text-align:left;color:var(--text-primary);font-size:12px;font-weight:600;font-family:inherit;display:flex;justify-content:space-between;align-items:center;">
+                        <span>${prop.name} -> 🏨 Hotel</span>
+                        <span style="color:#f87171;font-weight:700;">-$${costHotel}</span>
+                    </button>`;
+                } else {
+                    html += `<div style="width:100%;padding:10px 14px;background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;color:var(--text-muted);">
+                        ${prop.name} <span style="color:#f87171;">🏨 Hotel completo</span>
+                    </div>`;
+                }
+            });
+        });
+        html += '</div>';
+
+        document.getElementById('buildDialogContent').innerHTML = html;
+        document.getElementById('buildDialog').classList.add('show');
+    }
+
+    function buildHouseOnProperty(propId) {
+        const player = getCurrentPlayer();
+        const property = PROPERTIES[propId];
+        const cost = Math.ceil(property.price * 0.5);
+        const houses = gameState.propertyHouses[propId] || 0;
+        if (houses >= 4) { showNotification('Limite!', 'Já tem 4 casas. Construa um hotel!', 'error'); return; }
+        if (player.money < cost) { showNotification('Saldo insuficiente!', `Precisa de $${cost}`, 'error'); return; }
+        player.money -= cost;
+        gameState.propertyHouses[propId] = houses + 1;
+        gameState.stats.totalMoneySpent += cost;
+        gameState.stats.housesBuilt++;
+        soundManager.play('build');
+        addLog(`${player.name} construiu uma casa em ${property.name} (-$${cost})`, 'action');
+        showNotification('Casa construída!', `${property.name} - $${cost}`, 'success');
+        document.getElementById('buildDialog').classList.remove('show');
+        updateUI();
+    }
+
+    function buildHotelOnProperty(propId) {
+        const player = getCurrentPlayer();
+        const property = PROPERTIES[propId];
+        const cost = property.price;
+        const houses = gameState.propertyHouses[propId] || 0;
+        if (houses !== 4) { showNotification('Precisa de 4 casas!', 'Construa mais casas primeiro', 'error'); return; }
+        if (player.money < cost) { showNotification('Saldo insuficiente!', `Precisa de $${cost}`, 'error'); return; }
+        player.money -= cost;
+        gameState.propertyHouses[propId] = 5;
+        gameState.stats.totalMoneySpent += cost;
+        gameState.stats.hotelsBuilt++;
+        soundManager.play('build');
+        addLog(`${player.name} construiu um hotel em ${property.name} (-$${cost})`, 'action');
+        showNotification('Hotel construído!', `${property.name} - $${cost}`, 'success');
+        document.getElementById('buildDialog').classList.remove('show');
+        updateUI();
+    }
+
+    function declineBuild() { 
+        document.getElementById('buildDialog').classList.remove('show'); 
+    }
+
+    function endTurn() {
+        gameState.diceValue = 0;
+        gameState.dice1 = 0;
+        gameState.dice2 = 0;
+        gameState.selectedProperty = null;
+        
+        // Próximo jogador
+        gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+        
+        if (gameState.currentPlayerIndex === 0) {
+            gameState.round++;
+        }
+        
+        updateUI();
+    }
+
+    function checkPlayerBankrupt() {
+        const player = getCurrentPlayer();
+        if (player.money < 0) {
+            player.money = 0;
+            player.properties.forEach(pId => {
+                delete gameState.propertyOwners[pId];
+                delete gameState.propertyHouses[pId];
+            });
+            player.properties = [];
+            addLog(`${player.name} FALIU!`, 'error');
+            showNotification('Falência!', `${player.name} ficou sem dinheiro`, 'error');
+            checkGameOver();
+        }
+    }
+
+    function checkGameOver() {
+        const active = gameState.players.filter(p => p.money > 0);
+        if (active.length <= 1) {
+            const winner = active[0] || gameState.players.reduce((a, b) => a.money > b.money ? a : b);
+            endGame(winner);
+        }
+    }
+
+    function endGame(winner) {
+        gameState.gameActive = false;
+        ['rollBtn','buyBtn','buildBtn','skipBtn'].forEach(id => document.getElementById(id).disabled = true);
+        
+        soundManager.play('win');
+
+        const sorted = [...gameState.players].sort((a, b) => b.money - a.money);
+        const medals = ['🥇', '🥈', '🥉', '4️⃣'];
+
+        document.getElementById('gameOverContent').innerHTML = `
+            <div class="gameover-winner">
+                <div class="gameover-trophy">🏆</div>
+                <div class="gameover-name">${winner.name}</div>
+                <div class="gameover-sub">Venceu com $${winner.money.toLocaleString('pt-BR')}</div>
+            </div>
+            <div style="margin-bottom:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);">Placar Final</div>
+            ${sorted.map((p, i) => `
+                <div class="scoreboard-entry">
+                    <div class="score-rank">${medals[i]}</div>
+                    <div class="score-name">${p.name}</div>
+                    <div class="score-props">${p.properties.length} prop</div>
+                    <div class="score-money">$${p.money.toLocaleString('pt-BR')}</div>
+                </div>`).join('')}
+            <div style="margin-top:16px;font-size:12px;color:var(--text-muted);text-align:center;">Rodadas jogadas: ${gameState.round}</div>`;
+
+        document.getElementById('gameOverDialog').classList.add('show');
+    }
+
+    function aiTurn() {
+        const player = getCurrentPlayer();
+        
+        // Se não jogou dados ainda, jogar
+        if (gameState.diceValue === 0) {
+            setTimeout(() => {
+                rollDice();
+                // Após jogar dados, continuar com as decisões
+                setTimeout(() => aiMakeDecisions(), 2000);
+            }, 1500);
+            return;
+        }
+        
+        // Se já jogou dados, tomar decisões
+        aiMakeDecisions();
+    }
+
+    function aiMakeDecisions() {
+        const player = getCurrentPlayer();
+        
+        // Decidir comprar propriedade
+        if (gameState.selectedProperty && player.money >= gameState.selectedProperty.price) {
+            // IA mais inteligente: considerar fatores
+            const shouldBuy = aiShouldBuyProperty(player, gameState.selectedProperty);
+            
+            if (shouldBuy) {
+                setTimeout(() => {
+                    confirmBuy();
+                    // Após comprar, decidir sobre construção
+                    setTimeout(() => aiConsiderBuilding(), 1500);
+                }, 1000);
+                return;
+            } else {
+                setTimeout(() => {
+                    declineBuy();
+                    // Após recusar, considerar construção
+                    setTimeout(() => aiConsiderBuilding(), 1000);
+                }, 500);
+                return;
+            }
+        }
+        
+        // Se não há propriedade para decidir, considerar construção
+        aiConsiderBuilding();
+    }
+
+    function aiShouldBuyProperty(player, property) {
+        // Fatores para decisão de compra
+        const moneyRatio = player.money / property.price;
+        const propertyCount = player.properties.length;
+        const totalProperties = PROPERTIES.filter(p => p.type === 'property').length;
+        const propertyRatio = propertyCount / totalProperties;
+        
+        // Lógica de decisão
+        if (moneyRatio > 3) return true; // Muito dinheiro, comprar sempre
+        if (moneyRatio > 2 && propertyRatio < 0.3) return true; // Bom dinheiro e poucas propriedades
+        if (moneyRatio > 1.5 && property.group !== 'darkblue' && property.group !== 'green') return true; // Dinheiro razoável e não propriedades caras
+        if (property.price < 150) return true; // Propriedades baratas sempre
+        
+        // Decisão baseada em probabilidade
+        return Math.random() > 0.4; // 60% chance se não atendeu aos critérios acima
+    }
+
+    function aiConsiderBuilding() {
+        const player = getCurrentPlayer();
+        
+        // Verificar se pode construir em algum lugar
+        let canBuild = false;
+        let bestProperty = null;
+        let maxPriority = 0;
+        
+        for (const g in GROUPS) {
+            const gp = GROUPS[g];
+            const owned = gp.filter(n => {
+                const pr = PROPERTIES.find(p => p.name === n);
+                return gameState.propertyOwners[pr.id] === player.id;
+            });
+            
+            if (owned.length === gp.length) {
+                // Grupo completo, verificar construção
+                gp.forEach(n => {
+                    const pr = PROPERTIES.find(p => p.name === n);
+                    const houses = gameState.propertyHouses[pr.id] || 0;
+                    
+                    if (houses < 5) {
+                        const cost = houses < 4 ? Math.ceil(pr.price * 0.5) : pr.price;
+                        const priority = aiCalculateBuildPriority(player, pr, houses, cost);
+                        
+                        if (priority > maxPriority && player.money >= cost) {
+                            maxPriority = priority;
+                            bestProperty = pr;
+                            canBuild = true;
+                        }
+                    }
+                });
+            }
+        }
+        
+        if (canBuild && bestProperty && maxPriority > 0.5) {
+            // Construir na melhor propriedade
+            setTimeout(() => {
+                if (gameState.propertyHouses[bestProperty.id] < 4) {
+                    buildHouseOnProperty(bestProperty.id);
+                } else {
+                    buildHotelOnProperty(bestProperty.id);
+                }
+                // Após construir, passar turno
+                setTimeout(() => aiEndTurn(), 1500);
+            }, 1000);
+        } else {
+            // Não construir, passar turno
+            aiEndTurn();
+        }
+    }
+
+    function aiCalculateBuildPriority(player, property, currentHouses, cost) {
+        const moneyRatio = player.money / cost;
+        const houseCount = Object.values(gameState.propertyHouses).reduce((sum, h) => sum + (h < 5 ? h : 0), 0);
+        const totalHouseCount = gameState.players.reduce((sum, p) => 
+            sum + p.properties.reduce((s, propId) => s + (gameState.propertyHouses[propId] || 0), 0), 0);
+        
+        let priority = 0;
+        
+        // Fator dinheiro
+        if (moneyRatio > 3) priority += 0.4;
+        else if (moneyRatio > 2) priority += 0.3;
+        else if (moneyRatio > 1.5) priority += 0.2;
+        else if (moneyRatio > 1) priority += 0.1;
+        
+        // Fator estratégico
+        if (currentHouses === 0) priority += 0.3; // Primeira casa
+        else if (currentHouses === 3) priority += 0.4; // Quarta casa (antes do hotel)
+        
+        // Fator competitivo
+        if (houseCount < totalHouseCount * 0.5) priority += 0.2; // Estou atrás
+        
+        // Fator de propriedade
+        if (property.price > 300) priority += 0.1; // Propriedades caras valem mais construir
+        
+        return Math.min(1, priority);
+    }
+
+    function aiEndTurn() {
+        const player = getCurrentPlayer();
+        
+        // Adicionar delay realístico
+        setTimeout(() => {
+            endTurn();
+            
+            // Verificar se o próximo jogador também é IA
+            setTimeout(() => {
+                const nextPlayer = getCurrentPlayer();
+                if (nextPlayer.type === 'ai' && gameState.gameActive) {
+                    // Iniciar automaticamente o turno do próximo jogador IA
+                    setTimeout(() => aiTurn(), 1000);
+                }
+            }, 500);
+        }, 800);
+    }
+
+    function showRules() { 
+        document.getElementById('rulesDialog').classList.add('show'); 
+    }
+
+    function closeRules() { 
+        document.getElementById('rulesDialog').classList.remove('show'); 
+    }
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', () => {
+        updateUI();
+    });
+    </script>
+</body>
+</html>
