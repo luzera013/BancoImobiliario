@@ -3206,47 +3206,62 @@
         boardThemes: {
             default: {
                 name: 'Clássico',
-                description: 'Tema tradicional do Banco Imobiliário',
+                description: 'Tema tradicional do Banco Imobiliário com elegância dourada',
                 background: 'linear-gradient(135deg, #0a1a0a 0%, #0d1f0d 50%, #0a1a0a 100%)',
                 border: '#d4af37',
                 squareBg: 'linear-gradient(135deg, #1a2f1a 0%, #1a3a1a 100%)',
-                unlocked: true
+                textColor: '#d4af37',
+                glowColor: 'rgba(212, 175, 55, 0.6)',
+                unlocked: true,
+                specialEffects: true
             },
             neon: {
                 name: 'Neon',
-                description: 'Estilo cyberpunk com luzes neon',
+                description: 'Estilo cyberpunk com luzes neon pulsantes',
                 background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%)',
                 border: '#00ffff',
                 squareBg: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                textColor: '#00ffff',
+                glowColor: 'rgba(0, 255, 255, 0.8)',
                 unlocked: false,
-                price: 500
+                price: 500,
+                specialEffects: true
             },
             cosmic: {
                 name: 'Cósmico',
-                description: 'Exploração espacial e galáxias',
+                description: 'Exploração espacial com estrelas e nebulosas',
                 background: 'linear-gradient(135deg, #000428 0%, #004e92 100%)',
                 border: '#ffd700',
                 squareBg: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+                textColor: '#ffd700',
+                glowColor: 'rgba(255, 215, 0, 0.7)',
                 unlocked: false,
-                price: 750
+                price: 750,
+                specialEffects: true
             },
             retro: {
                 name: 'Retro',
-                description: 'Estilo anos 80 com cores vibrantes',
+                description: 'Estilo anos 80 com cores vibrantes e neon',
                 background: 'linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%)',
                 border: '#ff1744',
                 squareBg: 'linear-gradient(135deg, #ff8a80 0%, #ffab91 100%)',
+                textColor: '#ffffff',
+                glowColor: 'rgba(255, 23, 68, 0.8)',
                 unlocked: false,
-                price: 600
+                price: 600,
+                specialEffects: true
             },
             matrix: {
                 name: 'Matrix',
-                description: 'O mundo digital com código verde',
-                background: 'linear-gradient(135deg, #000000 0%, #0f0f0f 50%, #000000 100%)',
+                description: 'O mundo digital com código verde e chuva de código',
+                background: 'linear-gradient(135deg, #000000 0%, #0a0f0a 50%, #000000 100%)',
                 border: '#00ff00',
-                squareBg: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
+                squareBg: 'linear-gradient(135deg, #0d1a0d 0%, #1a2e1a 100%)',
+                textColor: '#00ff00',
+                glowColor: 'rgba(0, 255, 0, 0.8)',
                 unlocked: false,
-                price: 1000
+                price: 1000,
+                specialEffects: true
             }
         },
         tokenSkins: {
@@ -4187,18 +4202,31 @@
                 html += `<div class="mortgage-indicator">💰</div>`;
             }
             
-            // Tokens dos jogadores
+            // Tokens dos jogadores com skins personalizadas
             html += `<div class="player-tokens">`;
             if (playerPositions[i]) {
                 playerPositions[i].forEach(p => {
                     const isCurrent = p.id === gameState.currentPlayerIndex;
-                    html += `<div class="player-token ${PLAYER_COLORS[p.id]} ${isCurrent ? 'current' : ''}" title="${p.name}">${PLAYER_NUMS[p.id]}</div>`;
+                    const playerToken = SKIN_SYSTEM.playerTokens[p.id];
+                    const tokenDisplay = playerToken ? playerToken.token : PLAYER_NUMS[p.id];
+                    const tokenColor = playerToken ? playerToken.color : '';
+                    const tokenEffects = playerToken && playerToken.effects ? playerToken.effects.map(e => `effect-${e}`).join(' ') : '';
+                    
+                    html += `<div class="player-token ${PLAYER_COLORS[p.id]} ${isCurrent ? 'current' : ''} ${tokenEffects}" 
+                             data-player="${p.id}" 
+                             title="${p.name}"
+                             style="color: ${tokenColor}">${tokenDisplay}</div>`;
                 });
             }
             html += `</div>`;
 
             sq.innerHTML = html;
             board.appendChild(sq);
+        }
+        
+        // Aplicar tema atual após atualizar o tabuleiro
+        if (SKIN_SYSTEM.currentTheme && SKIN_SYSTEM.boardThemes[SKIN_SYSTEM.currentTheme]) {
+            setTimeout(() => applyTheme(), 100);
         }
     }
 
@@ -6689,29 +6717,126 @@ showNotification('Propriedade comprada!', `${property.name} - $${property.price}
         showNotification('Tema Alterado!', `Tema "${theme.name}" aplicado com sucesso!`, 'success');
     }
 
-    function applyTheme() {
-        const theme = SKIN_SYSTEM.boardThemes[SKIN_SYSTEM.currentTheme];
-        if (!theme) return;
-        
-        // Aplicar tema ao tabuleiro
-        const board = document.getElementById('gameBoard');
-        if (board) {
-            board.style.background = theme.background;
-            board.style.border = `3px solid ${theme.border}`;
-        }
-        
-        // Aplicar tema às casas do tabuleiro
-        const squares = document.querySelectorAll('.property-square');
-        squares.forEach(square => {
-            square.style.background = theme.squareBg;
-            square.style.border = `1px solid ${theme.border}`;
+    function clearAllThemeEffects() {
+        // Remover todos os elementos de efeitos de temas
+        const elementsToRemove = [
+            'matrixRain', 'matrixGlitch', 'matrixParticles',
+            'neonEffects', 'cosmicEffects', 'retroEffects'
+        ];
+        elementsToRemove.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.remove();
         });
         
-        // Aplicar variáveis CSS
+        // Remover estilos de todos os temas dos elementos
+        const glowElements = document.querySelectorAll('.square, .property-name, .property-price, .player-token');
+        glowElements.forEach(el => {
+            el.style.textShadow = '';
+            el.style.color = '';
+            el.style.animation = '';
+            el.style.animationDelay = '';
+            el.style.fontFamily = '';
+        });
+        
+        // Remover efeitos do tabuleiro
+        const board = document.getElementById('board');
+        if (board) {
+            board.style.boxShadow = '';
+            board.style.animation = '';
+            board.style.border = '';
+            board.style.borderImage = '';
+        }
+        
+        // Remover efeitos da tela do jogo
+        const gameScreen = document.getElementById('gameScreen');
+        if (gameScreen) {
+            gameScreen.style.border = '';
+            gameScreen.style.boxShadow = '';
+        }
+        
+        console.log('Todos os efeitos de temas removidos');
+    }
+
+    function applyTheme() {
+        const theme = SKIN_SYSTEM.boardThemes[SKIN_SYSTEM.currentTheme];
+        if (!theme) {
+            console.error('Tema não encontrado:', SKIN_SYSTEM.currentTheme);
+            return;
+        }
+        
+        console.log('Aplicando tema:', theme.name, theme);
+        
+        // Limpar efeitos de temas anteriores
+        clearAllThemeEffects();
+        
+        // Aplicar tema ao tabuleiro principal com mais força
+        const board = document.getElementById('board');
+        if (board) {
+            board.style.setProperty('background', theme.background, 'important');
+            board.style.setProperty('border', `3px solid ${theme.border}`, 'important');
+            console.log('Tema aplicado ao board');
+        } else {
+            console.error('Elemento board não encontrado!');
+        }
+        
+        // Aplicar tema a todas as casas do tabuleiro com mais força
+        const squares = document.querySelectorAll('.square');
+        console.log('Casas encontradas:', squares.length);
+        
+        squares.forEach((square, index) => {
+            // Aplicar background e borda baseadas no tema a TODAS as casas
+            square.style.setProperty('background', theme.squareBg, 'important');
+            square.style.setProperty('border', `1px solid ${theme.border}`, 'important');
+            
+            // Adicionar classe do tema para referência
+            square.classList.add('theme-' + SKIN_SYSTEM.currentTheme);
+        });
+        
+        // Aplicar tema ao container do jogo também
+        const gameScreen = document.getElementById('gameScreen');
+        if (gameScreen) {
+            gameScreen.style.setProperty('background', theme.background, 'important');
+        }
+        
+        // Aplicar variáveis CSS globais
         const root = document.documentElement;
-        root.style.setProperty('--board-bg', theme.background);
-        root.style.setProperty('--board-border', theme.border);
-        root.style.setProperty('--square-bg', theme.squareBg);
+        root.style.setProperty('--board-bg', theme.background, 'important');
+        root.style.setProperty('--board-border', theme.border, 'important');
+        root.style.setProperty('--square-bg', theme.squareBg, 'important');
+        
+        // Forçar reflow para garantir aplicação
+        board && board.offsetHeight;
+        
+        // Aplicar efeitos especiais para cada tema
+        if (theme.specialEffects) {
+            setTimeout(() => {
+                switch(theme.name) {
+                    case 'Clássico':
+                        createClassicEffects();
+                        break;
+                    case 'Neon':
+                        createNeonEffects();
+                        break;
+                    case 'Cósmico':
+                        createCosmicEffects();
+                        break;
+                    case 'Retro':
+                        createRetroEffects();
+                        break;
+                    case 'Matrix':
+                        applyMatrixEffects();
+                        break;
+                }
+            }, 300);
+        }
+        
+        // Salvar tema atual
+        savePlayerData();
+        
+        // Mostrar notificação
+        showNotification('Tema Aplicado', `Tema "${theme.name}" aplicado com sucesso!`, 'success');
+        
+        console.log('Tema aplicado completamente:', theme.name);
     }
 
     function buyTheme(themeId) {
@@ -6735,20 +6860,726 @@ showNotification('Propriedade comprada!', `${property.name} - $${property.price}
         VIRTUAL_ECONOMY.playerCoins[0] -= price;
         theme.unlocked = true;
         
+        // Aplicar tema automaticamente após a compra
+        SKIN_SYSTEM.currentTheme = themeId;
+        applyTheme();
+        
         // Salvar dados
         saveCustomizationData();
+        savePlayerData();
         updateShopUI();
         updateCustomizationUI();
         
-        showNotification('Compra Realizada!', `Tema "${theme.name}" desbloqueado por ${price} moedas!`, 'success');
+        showNotification('Compra Realizada!', `Tema "${theme.name}" comprado e aplicado por ${price} moedas!`, 'success');
         soundManager.play('buy');
+        createParticles('money', 15, window.innerWidth / 2, window.innerHeight / 2);
+    }
+
+    function createMatrixRain() {
+        // Remover chuva anterior se existir
+        const existingRain = document.getElementById('matrixRain');
+        if (existingRain) existingRain.remove();
+        
+        const rainContainer = document.createElement('div');
+        rainContainer.id = 'matrixRain';
+        rainContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.4;
+        `;
+        
+        // Criar colunas de código com mais variedade
+        for (let i = 0; i < 80; i++) {
+            const column = document.createElement('div');
+            const speed = 3 + Math.random() * 12;
+            const fontSize = 10 + Math.random() * 8;
+            const brightness = 0.3 + Math.random() * 0.7;
+            
+            column.style.cssText = `
+                position: absolute;
+                left: ${Math.random() * 100}%;
+                top: -200px;
+                color: rgba(0, 255, 0, ${brightness});
+                font-family: 'Courier New', monospace;
+                font-size: ${fontSize}px;
+                text-shadow: 0 0 ${fontSize/2}px rgba(0, 255, 0, ${brightness});
+                animation: matrixFall ${speed}s linear infinite;
+                animation-delay: ${Math.random() * 5}s;
+                white-space: pre;
+            `;
+            
+            // Gerar caracteres aleatórios com mais variedade
+            const characters = '01ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@#$%^&*()_+-=[]{}|;:,.<>?';
+            let text = '';
+            for (let j = 0; j < 30; j++) {
+                const char = characters[Math.floor(Math.random() * characters.length)];
+                const charBrightness = Math.random();
+                text += `<span style="opacity: ${charBrightness}">${char}</span>\n`;
+            }
+            column.innerHTML = text;
+            
+            rainContainer.appendChild(column);
+        }
+        
+        // Adicionar animação CSS avançada
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes matrixFall {
+                0% {
+                    transform: translateY(-100px);
+                    opacity: 0;
+                }
+                10% {
+                    opacity: 1;
+                }
+                90% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(100vh);
+                    opacity: 0;
+                }
+            }
+            @keyframes matrixGlow {
+                0%, 100% { opacity: 0.4; }
+                50% { opacity: 0.8; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Adicionar efeito de brilho pulsante
+        rainContainer.style.animation = 'matrixGlow 4s ease-in-out infinite';
+        
+        document.body.appendChild(rainContainer);
+    }
+
+    function createDigitalGlitch() {
+        // Remover glitch anterior se existir
+        const existingGlitch = document.getElementById('matrixGlitch');
+        if (existingGlitch) existingGlitch.remove();
+        
+        const glitchContainer = document.createElement('div');
+        glitchContainer.id = 'matrixGlitch';
+        glitchContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0;
+            animation: glitchAppear 8s ease-in-out infinite;
+        `;
+        
+        // Criar efeito de glitch
+        for (let i = 0; i < 3; i++) {
+            const glitch = document.createElement('div');
+            glitch.style.cssText = `
+                position: absolute;
+                top: ${Math.random() * 100}%;
+                left: ${Math.random() * 100}%;
+                width: ${50 + Math.random() * 200}px;
+                height: 2px;
+                background: linear-gradient(90deg, transparent, #00ff00, transparent);
+                animation: glitchMove ${0.1 + Math.random() * 0.3}s linear infinite;
+                animation-delay: ${Math.random() * 2}s;
+            `;
+            glitchContainer.appendChild(glitch);
+        }
+        
+        // Adicionar CSS para glitch
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes glitchAppear {
+                0%, 85%, 100% { opacity: 0; }
+                86%, 88%, 90%, 92%, 94% { opacity: 1; }
+                87%, 89%, 91%, 93% { opacity: 0.3; }
+            }
+            @keyframes glitchMove {
+                0% { transform: translateX(-100px); }
+                100% { transform: translateX(100px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.body.appendChild(glitchContainer);
+    }
+
+    function createDigitalParticles() {
+        // Remover partículas anteriores se existirem
+        const existingParticles = document.getElementById('matrixParticles');
+        if (existingParticles) existingParticles.remove();
+        
+        const particlesContainer = document.createElement('div');
+        particlesContainer.id = 'matrixParticles';
+        particlesContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+        `;
+        
+        // Criar partículas digitais flutuantes
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            const size = 2 + Math.random() * 4;
+            const duration = 5 + Math.random() * 10;
+            
+            particle.style.cssText = `
+                position: absolute;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                width: ${size}px;
+                height: ${size}px;
+                background: #00ff00;
+                border-radius: 50%;
+                box-shadow: 0 0 ${size * 2}px rgba(0, 255, 0, 0.8);
+                animation: particleFloat ${duration}s ease-in-out infinite;
+                animation-delay: ${Math.random() * 5}s;
+            `;
+            
+            particlesContainer.appendChild(particle);
+        }
+        
+        // Adicionar CSS para partículas
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes particleFloat {
+                0%, 100% {
+                    transform: translate(0, 0) scale(1);
+                    opacity: 0.8;
+                }
+                25% {
+                    transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) scale(1.2);
+                    opacity: 1;
+                }
+                50% {
+                    transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) scale(0.8);
+                    opacity: 0.6;
+                }
+                75% {
+                    transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) scale(1.1);
+                    opacity: 0.9;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.body.appendChild(particlesContainer);
+    }
+
+    function createDigitalSounds() {
+        // Criar sons digitais sutis usando Web Audio API
+        if (typeof AudioContext !== 'undefined') {
+            const audioContext = new AudioContext();
+            
+            // Som de "bip" digital periódico
+            setInterval(() => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800 + Math.random() * 400;
+                oscillator.type = 'square';
+                
+                gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            }, 3000 + Math.random() * 5000);
+        }
+    }
+
+    function createClassicEffects() {
+        const theme = SKIN_SYSTEM.boardThemes[SKIN_SYSTEM.currentTheme];
+        if (!theme || theme.name !== 'Clássico') return;
+        
+        console.log('Aplicando efeitos Clássicos...');
+        
+        // Efeito dourado elegante
+        const glowElements = document.querySelectorAll('.square, .property-name, .property-price, .player-token');
+        glowElements.forEach((el, index) => {
+            el.style.textShadow = `0 0 8px ${theme.glowColor}, 0 0 16px rgba(212, 175, 55, 0.3)`;
+            el.style.color = theme.textColor || '#d4af37';
+            
+            // Animação sutil de brilho
+            el.style.animation = `classicGlow ${3 + Math.random() * 2}s ease-in-out infinite`;
+            el.style.animationDelay = `${Math.random() * 2}s`;
+        });
+        
+        // Tabuleiro com brilho dourado
+        const board = document.getElementById('board');
+        if (board) {
+            board.style.boxShadow = `
+                0 0 40px rgba(212, 175, 55, 0.4),
+                0 0 80px rgba(212, 175, 55, 0.2),
+                inset 0 0 40px rgba(212, 175, 55, 0.1)
+            `;
+            board.style.animation = 'classicPulse 6s ease-in-out infinite';
+        }
+        
+        // CSS para animações clássicas
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes classicGlow {
+                0%, 100% { opacity: 0.9; filter: brightness(1); }
+                50% { opacity: 1; filter: brightness(1.1); }
+            }
+            @keyframes classicPulse {
+                0%, 100% { filter: brightness(1) saturate(1); }
+                50% { filter: brightness(1.05) saturate(1.1); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    function createNeonEffects() {
+        const theme = SKIN_SYSTEM.boardThemes[SKIN_SYSTEM.currentTheme];
+        if (!theme || theme.name !== 'Neon') return;
+        
+        console.log('Aplicando efeitos Neon...');
+        
+        // Remover efeitos anteriores
+        const existingNeon = document.getElementById('neonEffects');
+        if (existingNeon) existingNeon.remove();
+        
+        // Criar container para efeitos neon
+        const neonContainer = document.createElement('div');
+        neonContainer.id = 'neonEffects';
+        neonContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        `;
+        
+        // Criar linhas neon pulsantes
+        for (let i = 0; i < 8; i++) {
+            const neonLine = document.createElement('div');
+            neonLine.style.cssText = `
+                position: absolute;
+                ${Math.random() > 0.5 ? 'width: 2px; height: 100%;' : 'width: 100%; height: 2px;'}
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                background: linear-gradient(90deg, transparent, ${theme.border}, transparent);
+                animation: neonPulse ${2 + Math.random() * 3}s ease-in-out infinite;
+                animation-delay: ${Math.random() * 3}s;
+                opacity: 0.6;
+            `;
+            neonContainer.appendChild(neonLine);
+        }
+        
+        document.body.appendChild(neonContainer);
+        
+        // Efeito neon nos elementos
+        const glowElements = document.querySelectorAll('.square, .property-name, .property-price, .player-token');
+        glowElements.forEach((el, index) => {
+            el.style.textShadow = `
+                0 0 10px ${theme.glowColor},
+                0 0 20px ${theme.border},
+                0 0 30px rgba(0, 255, 255, 0.5)
+            `;
+            el.style.color = theme.textColor || '#00ffff';
+            
+            el.style.animation = `neonFlicker ${0.1 + Math.random() * 0.2}s ease-in-out infinite`;
+        });
+        
+        // Tabuleiro neon
+        const board = document.getElementById('board');
+        if (board) {
+            board.style.boxShadow = `
+                0 0 50px rgba(0, 255, 255, 0.8),
+                0 0 100px rgba(0, 255, 255, 0.4),
+                inset 0 0 50px rgba(0, 255, 255, 0.2)
+            `;
+            board.style.animation = 'neonPulse 3s ease-in-out infinite';
+        }
+        
+        // CSS para efeitos neon
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes neonPulse {
+                0%, 100% { opacity: 0.6; }
+                50% { opacity: 1; }
+            }
+            @keyframes neonFlicker {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.8; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    function createCosmicEffects() {
+        const theme = SKIN_SYSTEM.boardThemes[SKIN_SYSTEM.currentTheme];
+        if (!theme || theme.name !== 'Cósmico') return;
+        
+        console.log('Aplicando efeitos Cósmicos...');
+        
+        // Remover efeitos anteriores
+        const existingCosmic = document.getElementById('cosmicEffects');
+        if (existingCosmic) existingCosmic.remove();
+        
+        // Criar campo de estrelas
+        const cosmicContainer = document.createElement('div');
+        cosmicContainer.id = 'cosmicEffects';
+        cosmicContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        `;
+        
+        // Criar estrelas
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            const size = 1 + Math.random() * 3;
+            star.style.cssText = `
+                position: absolute;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                width: ${size}px;
+                height: ${size}px;
+                background: ${theme.border};
+                border-radius: 50%;
+                animation: twinkle ${2 + Math.random() * 4}s ease-in-out infinite;
+                animation-delay: ${Math.random() * 4}s;
+                box-shadow: 0 0 ${size * 2}px rgba(255, 215, 0, 0.8);
+            `;
+            cosmicContainer.appendChild(star);
+        }
+        
+        // Criar nebulosa
+        const nebula = document.createElement('div');
+        nebula.style.cssText = `
+            position: absolute;
+            left: 20%;
+            top: 30%;
+            width: 300px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+            animation: nebulaFloat 20s ease-in-out infinite;
+            filter: blur(40px);
+        `;
+        cosmicContainer.appendChild(nebula);
+        
+        document.body.appendChild(cosmicContainer);
+        
+        // Efeito cósmico nos elementos
+        const glowElements = document.querySelectorAll('.square, .property-name, .property-price, .player-token');
+        glowElements.forEach((el, index) => {
+            el.style.textShadow = `
+                0 0 15px ${theme.glowColor},
+                0 0 30px rgba(255, 215, 0, 0.4)
+            `;
+            el.style.color = theme.textColor || '#ffd700';
+            
+            el.style.animation = `cosmicShimmer ${3 + Math.random() * 2}s ease-in-out infinite`;
+        });
+        
+        // Tabuleiro cósmico
+        const board = document.getElementById('board');
+        if (board) {
+            board.style.boxShadow = `
+                0 0 60px rgba(255, 215, 0, 0.6),
+                0 0 120px rgba(255, 215, 0, 0.3),
+                inset 0 0 60px rgba(255, 215, 0, 0.2)
+            `;
+            board.style.animation = 'cosmicRotate 30s linear infinite';
+        }
+        
+        // CSS para efeitos cósmicos
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes twinkle {
+                0%, 100% { opacity: 0.3; transform: scale(1); }
+                50% { opacity: 1; transform: scale(1.2); }
+            }
+            @keyframes nebulaFloat {
+                0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                33% { transform: translate(50px, -30px) rotate(120deg); }
+                66% { transform: translate(-30px, 50px) rotate(240deg); }
+            }
+            @keyframes cosmicShimmer {
+                0%, 100% { opacity: 0.8; filter: brightness(1); }
+                50% { opacity: 1; filter: brightness(1.3); }
+            }
+            @keyframes cosmicRotate {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    function createRetroEffects() {
+        const theme = SKIN_SYSTEM.boardThemes[SKIN_SYSTEM.currentTheme];
+        if (!theme || theme.name !== 'Retro') return;
+        
+        console.log('Aplicando efeitos Retro...');
+        
+        // Remover efeitos anteriores
+        const existingRetro = document.getElementById('retroEffects');
+        if (existingRetro) existingRetro.remove();
+        
+        // Criar container retro
+        const retroContainer = document.createElement('div');
+        retroContainer.id = 'retroEffects';
+        retroContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(255, 23, 68, 0.03),
+                rgba(255, 23, 68, 0.03) 2px,
+                transparent 2px,
+                transparent 4px
+            );
+            animation: retroScan 8s linear infinite;
+        `;
+        
+        // Criar formas geométricas retro
+        for (let i = 0; i < 15; i++) {
+            const shape = document.createElement('div');
+            const shapes = ['circle', 'square', 'triangle'];
+            const shapeType = shapes[Math.floor(Math.random() * shapes.length)];
+            const size = 20 + Math.random() * 40;
+            
+            let shapeStyle = `
+                position: absolute;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                width: ${size}px;
+                height: ${size}px;
+                animation: retroFloat ${5 + Math.random() * 10}s ease-in-out infinite;
+                animation-delay: ${Math.random() * 5}s;
+                opacity: 0.3;
+            `;
+            
+            if (shapeType === 'circle') {
+                shapeStyle += `border-radius: 50%; background: ${theme.border};`;
+            } else if (shapeType === 'square') {
+                shapeStyle += `background: linear-gradient(45deg, ${theme.border}, transparent);`;
+            } else {
+                shapeStyle += `width: 0; height: 0; border-left: ${size/2}px solid transparent; border-right: ${size/2}px solid transparent; border-bottom: ${size}px solid ${theme.border};`;
+            }
+            
+            shape.style.cssText = shapeStyle;
+            retroContainer.appendChild(shape);
+        }
+        
+        document.body.appendChild(retroContainer);
+        
+        // Efeito retro nos elementos
+        const glowElements = document.querySelectorAll('.square, .property-name, .property-price, .player-token');
+        glowElements.forEach((el, index) => {
+            el.style.textShadow = `
+                3px 3px 0px rgba(255, 23, 68, 0.5),
+                6px 6px 0px rgba(76, 205, 196, 0.3)
+            `;
+            el.style.color = theme.textColor || '#ffffff';
+            el.style.fontFamily = 'Courier New, monospace';
+            
+            el.style.animation = `retroBounce ${0.5 + Math.random() * 0.5}s ease-in-out infinite`;
+        });
+        
+        // Tabuleiro retro
+        const board = document.getElementById('board');
+        if (board) {
+            board.style.boxShadow = `
+                0 0 40px rgba(255, 23, 68, 0.6),
+                0 0 80px rgba(76, 205, 196, 0.4),
+                inset 0 0 40px rgba(255, 23, 68, 0.2)
+            `;
+            board.style.animation = 'retroPulse 2s ease-in-out infinite';
+            board.style.border = '4px solid';
+            board.style.borderImage = `linear-gradient(45deg, ${theme.border}, #4ecdc4, ${theme.border}) 1`;
+        }
+        
+        // CSS para efeitos retro
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes retroScan {
+                from { transform: translateY(-100%); }
+                to { transform: translateY(100%); }
+            }
+            @keyframes retroFloat {
+                0%, 100% { transform: translate(0, 0) rotate(0deg); }
+                25% { transform: translate(30px, -20px) rotate(90deg); }
+                50% { transform: translate(-20px, 30px) rotate(180deg); }
+                75% { transform: translate(-30px, -20px) rotate(270deg); }
+            }
+            @keyframes retroBounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-3px); }
+            }
+            @keyframes retroPulse {
+                0%, 100% { filter: hue-rotate(0deg) saturate(1); }
+                50% { filter: hue-rotate(10deg) saturate(1.2); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    function applyMatrixEffects() {
+        const theme = SKIN_SYSTEM.boardThemes[SKIN_SYSTEM.currentTheme];
+        if (!theme || theme.name !== 'Matrix') return;
+        
+        console.log('Aplicando efeitos Matrix avançados...');
+        
+        // Criar todos os efeitos visuais
+        createMatrixRain();
+        createDigitalGlitch();
+        createDigitalParticles();
+        
+        // Iniciar sons digitais
+        setTimeout(() => createDigitalSounds(), 1000);
+        
+        // Aplicar brilho verde avançado aos elementos
+        const glowElements = document.querySelectorAll('.square, .property-name, .property-price, .player-token');
+        glowElements.forEach((el, index) => {
+            el.style.textShadow = `0 0 ${5 + Math.random() * 10}px #00ff00, 0 0 ${10 + Math.random() * 20}px rgba(0, 255, 0, 0.5)`;
+            el.style.color = theme.textColor || '#00ff00';
+            
+            // Adicionar animação de piscar individual
+            el.style.animation = `matrixGlow ${2 + Math.random() * 3}s ease-in-out infinite`;
+            el.style.animationDelay = `${Math.random() * 2}s`;
+        });
+        
+        // Efeito de tabuleiro digital avançado
+        const board = document.getElementById('board');
+        if (board) {
+            board.style.boxShadow = `
+                0 0 30px rgba(0, 255, 0, 0.8),
+                0 0 60px rgba(0, 255, 0, 0.4),
+                inset 0 0 30px rgba(0, 255, 0, 0.2),
+                0 0 100px rgba(0, 255, 0, 0.1)
+            `;
+            board.style.animation = 'matrixPulse 4s ease-in-out infinite';
+        }
+        
+        // Efeito de borda digital
+        const gameScreen = document.getElementById('gameScreen');
+        if (gameScreen) {
+            gameScreen.style.border = '2px solid rgba(0, 255, 0, 0.3)';
+            gameScreen.style.boxShadow = `
+                inset 0 0 50px rgba(0, 255, 0, 0.1),
+                0 0 20px rgba(0, 255, 0, 0.2)
+            `;
+        }
+        
+        // Adicionar CSS adicional para animações
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes matrixPulse {
+                0%, 100% { 
+                    filter: brightness(1) contrast(1);
+                    transform: scale(1);
+                }
+                50% { 
+                    filter: brightness(1.1) contrast(1.1);
+                    transform: scale(1.005);
+                }
+            }
+            @keyframes matrixGlow {
+                0%, 100% { 
+                    opacity: 0.8;
+                    filter: brightness(1);
+                }
+                50% { 
+                    opacity: 1;
+                    filter: brightness(1.2);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        console.log('Efeitos Matrix avançados aplicados com sucesso!');
+    }
+
+    function forceApplyTheme() {
+        const theme = SKIN_SYSTEM.boardThemes[SKIN_SYSTEM.currentTheme];
+        if (!theme) return;
+        
+        console.log('FORÇANDO aplicação do tema:', theme.name);
+        
+        // Aplicar a todos os elementos possíveis
+        const elements = [
+            '#board',
+            '#gameScreen', 
+            '.square',
+            '.property',
+            '.corner',
+            '.special'
+        ];
+        
+        elements.forEach(selector => {
+            const els = document.querySelectorAll(selector);
+            els.forEach(el => {
+                if (selector === '#board' || selector === '#gameScreen') {
+                    el.style.setProperty('background', theme.background, 'important');
+                    el.style.setProperty('border', `3px solid ${theme.border}`, 'important');
+                } else {
+                    el.style.setProperty('background', theme.squareBg, 'important');
+                    el.style.setProperty('border', `1px solid ${theme.border}`, 'important');
+                }
+            });
+        });
+        
+        // Adicionar CSS global
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .square { 
+                background: ${theme.squareBg} !important; 
+                border: 1px solid ${theme.border} !important; 
+            }
+            #board { 
+                background: ${theme.background} !important; 
+                border: 3px solid ${theme.border} !important; 
+            }
+            #gameScreen { 
+                background: ${theme.background} !important; 
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Aplicar efeitos especiais se for o tema Matrix
+        if (theme.name === 'Matrix' && theme.specialEffects) {
+            setTimeout(() => applyMatrixEffects(), 300);
+        }
     }
 
     function applyCustomizationToGame() {
         if (!gameState.started) return;
         
-        // Aplicar tema atual
+        // Aplicar tema atual com força
         applyTheme();
+        
+        // Forçar aplicação após um pequeno delay
+        setTimeout(() => forceApplyTheme(), 200);
         
         // Aplicar skins dos tokens
         Object.keys(SKIN_SYSTEM.playerTokens).forEach(playerId => {
@@ -6778,19 +7609,28 @@ showNotification('Propriedade comprada!', `${property.name} - $${property.price}
         if (!skin) return;
         
         if (!skin.unlocked) {
-            showNotification('Bloqueado!', `Você precisa desbloquear a skin "${skin.name}" primeiro!`, 'error');
+            showNotification('Bloqueado!', 'Você precisa comprar esta skin na loja!', 'error');
             return;
         }
         
-        // Aplicar skin ao jogador atual (player 0)
-        SKIN_SYSTEM.playerTokens[0].skin = skinId;
-        SKIN_SYSTEM.playerTokens[0].token = skin.tokens[0];
+        // Aplicar skin a todos os jogadores
+        Object.keys(SKIN_SYSTEM.playerTokens).forEach(playerId => {
+            const playerIndex = parseInt(playerId);
+            if (skin.tokens[playerIndex]) {
+                SKIN_SYSTEM.playerTokens[playerIndex].skin = skinId;
+                SKIN_SYSTEM.playerTokens[playerIndex].token = skin.tokens[playerIndex];
+            }
+        });
         
-        updatePlayerTokens();
+        // Atualizar o tabuleiro se o jogo estiver em andamento
+        if (gameState && gameState.started) {
+            updateBoard();
+        }
+        
         saveCustomizationData();
         updateCustomizationUI();
         
-        showNotification('Skin Alterada!', `Skin "${skin.name}" aplicada com sucesso!`, 'success');
+        showNotification('Skin Alterada!', `Skin "${skin.name}" aplicada a todos os jogadores!`, 'success');
     }
 
     function buySkin(skinId) {
@@ -6814,13 +7654,18 @@ showNotification('Propriedade comprada!', `${property.name} - $${property.price}
         VIRTUAL_ECONOMY.playerCoins[0] -= price;
         skin.unlocked = true;
         
+        // Aplicar skin automaticamente após a compra
+        selectTokenSkin(skinId);
+        
         // Salvar dados
         saveCustomizationData();
+        savePlayerData();
         updateShopUI();
         updateCustomizationUI();
         
-        showNotification('Compra Realizada!', `Skin "${skin.name}" desbloqueada por ${price} moedas!`, 'success');
+        showNotification('Compra Realizada!', `Skin "${skin.name}" comprada e aplicada por ${price} moedas!`, 'success');
         soundManager.play('buy');
+        createParticles('money', 15, window.innerWidth / 2, window.innerHeight / 2);
     }
 
     function toggleEffect(effectId) {
@@ -6870,13 +7715,18 @@ showNotification('Propriedade comprada!', `${property.name} - $${property.price}
         VIRTUAL_ECONOMY.playerCoins[0] -= price;
         effect.unlocked = true;
         
+        // Aplicar efeito automaticamente após a compra
+        toggleEffect(effectId);
+        
         // Salvar dados
         saveCustomizationData();
+        savePlayerData();
         updateShopUI();
         updateCustomizationUI();
         
-        showNotification('Compra Realizada!', `Efeito "${effect.name}" desbloqueado por ${price} moedas!`, 'success');
+        showNotification('Compra Realizada!', `Efeito "${effect.name}" comprado e aplicado por ${price} moedas!`, 'success');
         soundManager.play('buy');
+        createParticles('money', 15, window.innerWidth / 2, window.innerHeight / 2);
     }
 
     function loadCustomizationData() {
@@ -6943,6 +7793,7 @@ showNotification('Propriedade comprada!', `${property.name} - $${property.price}
     // Inicializar sistema de personalização ao carregar a página
     document.addEventListener('DOMContentLoaded', function() {
         loadCustomizationData();
+        loadPlayerData();
         
         // Inicializar configurações
         initializeSettings();
@@ -7477,6 +8328,175 @@ showNotification('Propriedade comprada!', `${property.name} - $${property.price}
         });
         
         showNotification('Lista de Replays', replayList, 'info');
+    }
+
+    // Função aprimorada para início de partida
+    function enhancedStartGame(modeConfig) {
+        // Criar partículas de celebração antes de mudar de tela
+        createParticles('success', 20, window.innerWidth / 2, window.innerHeight / 2);
+        
+        // Efeito de fade out suave da tela atual
+        const currentScreen = document.querySelector('.screen.active');
+        if (currentScreen) {
+            currentScreen.style.transition = 'opacity 0.5s ease-out';
+            currentScreen.style.opacity = '0';
+        }
+        
+        setTimeout(() => {
+            // Mudar para tela do jogo
+            switchScreen('gameScreen');
+            
+            // Resetar opacidade e aplicar efeito de entrada
+            const gameScreen = document.getElementById('gameScreen');
+            if (gameScreen) {
+                gameScreen.style.transition = 'opacity 0.5s ease-in';
+                gameScreen.style.opacity = '1';
+            }
+            
+            updateUI();
+            
+            // Aplicar personalização ao iniciar o jogo
+            applyCustomizationToGame();
+            
+            // Efeito de brilho no tabuleiro com múltiplas camadas
+            const board = document.getElementById('board');
+            if (board) {
+                board.style.animation = 'none';
+                board.style.boxShadow = '0 0 50px rgba(99,102,241,0.8), 0 0 100px rgba(99,102,241,0.4)';
+                setTimeout(() => {
+                    board.style.boxShadow = '0 0 30px rgba(99,102,241,0.6), 0 0 60px rgba(99,102,241,0.3)';
+                    setTimeout(() => {
+                        board.style.boxShadow = '0 0 15px rgba(99,102,241,0.4), 0 0 30px rgba(99,102,241,0.2)';
+                        setTimeout(() => {
+                            board.style.boxShadow = '';
+                        }, 500);
+                    }, 500);
+                }, 500);
+            }
+            
+            // Mensagens detalhadas no log com emojis
+            addLog('PARTIDA INICIADA!', 'success');
+            addLog(`Modo: ${modeConfig.name}`, 'info');
+            addLog(`Jogadores: ${modeConfig.playerCount}`, 'info');
+            addLog(`Dinheiro inicial: $${modeConfig.startingMoney}`, 'info');
+            addLog(`Objetivo: Ser o último jogador com dinheiro!`, 'info');
+            
+            // Notificações em sequência para melhor experiência
+            setTimeout(() => {
+                showNotification('Partida Iniciada!', `Modo: ${modeConfig.name}`, 'success');
+            }, 300);
+            
+            setTimeout(() => {
+                showNotification('', `${modeConfig.playerCount} jogadores no jogo`, 'info');
+            }, 800);
+            
+            setTimeout(() => {
+                showNotification('', `Cada jogador começa com $${modeConfig.startingMoney}`, 'info');
+            }, 1300);
+            
+            // Tocar som de início com delay
+            setTimeout(() => {
+                soundManager.play('start');
+            }, 500);
+            
+            // Criar mais partículas após um segundo
+            setTimeout(() => {
+                createParticles('money', 10, window.innerWidth / 2, window.innerHeight / 2);
+            }, 1000);
+            
+            // Iniciar partida da IA automaticamente com delay maior
+            if (getCurrentPlayer().type === 'ai') {
+                setTimeout(() => {
+                    addLog('IA pensando...', 'warning');
+                    setTimeout(rollDice, 1500);
+                }, 2000);
+            }
+        }, 500);
+    }
+
+    // Função para ganhar moedas (bônus diário)
+    function earnCoins() {
+        const bonusAmount = VIRTUAL_ECONOMY.dailyBonus || 100;
+        const currentTime = Date.now();
+        const lastClaim = VIRTUAL_ECONOMY.lastDailyBonus || 0;
+        
+        // Verificar se já passou 24 horas desde o último bônus
+        const hoursSinceLastClaim = (currentTime - lastClaim) / (1000 * 60 * 60);
+        
+        if (hoursSinceLastClaim < 24) {
+            const hoursRemaining = Math.ceil(24 - hoursSinceLastClaim);
+            showNotification('Bônus Indisponível', `Volte em ${hoursRemaining} horas para ganhar mais moedas!`, 'warning');
+            return;
+        }
+        
+        // Adicionar moedas e atualizar timestamp
+        VIRTUAL_ECONOMY.playerCoins[0] += bonusAmount;
+        VIRTUAL_ECONOMY.lastDailyBonus = currentTime;
+        
+        // Salvar dados
+        saveCustomizationData();
+        updateShopUI();
+        
+        // Efeitos visuais
+        createParticles('money', 20, window.innerWidth / 2, window.innerHeight / 2);
+        soundManager.play('buy');
+        
+        showNotification('Bônus Diário!', `Você ganhou ${bonusAmount} moedas!`, 'success');
+    }
+
+    // Função para salvar dados do jogador
+    function savePlayerData() {
+        try {
+            const playerData = {
+                coins: VIRTUAL_ECONOMY.playerCoins,
+                lastBonus: VIRTUAL_ECONOMY.lastDailyBonus,
+                customization: {
+                    currentTheme: SKIN_SYSTEM.currentTheme,
+                    playerTokens: SKIN_SYSTEM.playerTokens
+                }
+            };
+            
+            localStorage.setItem('bancoImobiliarioPlayerData', JSON.stringify(playerData));
+        } catch (e) {
+            console.error('Erro ao salvar dados do jogador:', e);
+        }
+    }
+
+    // Função para carregar dados do jogador
+    function loadPlayerData() {
+        try {
+            const savedData = localStorage.getItem('bancoImobiliarioPlayerData');
+            if (savedData) {
+                const playerData = JSON.parse(savedData);
+                
+                if (playerData.coins) {
+                    Object.assign(VIRTUAL_ECONOMY.playerCoins, playerData.coins);
+                }
+                
+                if (playerData.lastBonus) {
+                    VIRTUAL_ECONOMY.lastDailyBonus = playerData.lastBonus;
+                }
+                
+                if (playerData.customization) {
+                    if (playerData.customization.currentTheme) {
+                        SKIN_SYSTEM.currentTheme = playerData.customization.currentTheme;
+                    }
+                    if (playerData.customization.playerTokens) {
+                        Object.assign(SKIN_SYSTEM.playerTokens, playerData.customization.playerTokens);
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Erro ao carregar dados do jogador:', e);
+        }
+    }
+
+    // Adicionar estas funções ao escopo global
+    if (typeof window !== 'undefined') {
+        window.enhancedStartGame = enhancedStartGame;
+        window.earnCoins = earnCoins;
+        window.savePlayerData = savePlayerData;
+        window.loadPlayerData = loadPlayerData;
     }
     </script>
 </body>
